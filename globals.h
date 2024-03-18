@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 
 /* Cyclone V FPGA devices */
 #define LEDR_BASE 0xFF200000
