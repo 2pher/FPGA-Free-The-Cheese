@@ -83,5 +83,8 @@ void display_HEX(char b1, char b2, char b3) {
     *(HEX5_HEX4_ptr) = *(int *)(hex_segs + 4);
 }
 
+void display_LED(void) {
+    
+}
 
 #endif

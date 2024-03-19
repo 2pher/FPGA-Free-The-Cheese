@@ -64,10 +64,6 @@
 #define CTL0 0x1C000000
 #define CTL3 0x1C00000C
 
-extern int pixel_buffer_start;
-
-extern bool LEFT, RIGHT, UP, DOWN;
-
 /*****************************************************************************/
 /* Macros for accessing the control registers.                               */
 /*****************************************************************************/
@@ -100,5 +96,7 @@ extern bool LEFT, RIGHT, UP, DOWN;
 
 // Global variables
 extern volatile char byte1, byte2, byte3;
+extern int pixel_buffer_start;
+extern bool LEFT, RIGHT, UP, DOWN;
 
 #endif
