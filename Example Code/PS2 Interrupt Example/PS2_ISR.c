@@ -7,8 +7,7 @@ extern volatile char byte1, byte2, byte3;
  *                                                                          
  * This routine stores to last three bytes received from the PS/2 device.
  ******************************************************************************/
-void PS2_ISR( void )
-{
+void PS2_ISR( void ) {
   	volatile int * PS2_ptr = (int *) PS2_BASE;		// PS/2 port address
 	int PS2_data, RAVAIL;
 
