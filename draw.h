@@ -15,6 +15,6 @@ void swap(int *a, int *b);
 void draw_line(int x0, int y0, int x1, int y1, short int colour);
 
 //draw player square
-void draw_player_square(point* location, int squareSize);
+void draw_player_square(Square* square);
 	
 

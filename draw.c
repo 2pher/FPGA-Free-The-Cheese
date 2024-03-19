@@ -72,10 +72,10 @@ void draw_line(int x0, int y0, int x1, int y1, short int colour){
 }
 
 //draw player square, ONLY ODD VALUED SQUARESIZE
-void draw_player_square(point* location, int squareSize){
-    int half_side_length = (squareSize - 1) / 2;
-    for(int x = location -> x - half_side_length; x < location -> x + half_side_length; x++){
-        for(int y = location -> y - half_side_length; y < location -> y + half_side_length; y++){
+void draw_player_square(Square* square){
+    int half_side_length = (square -> sideLength - 1) / 2;
+    for(int x = square -> position -> x - half_side_length; x < square -> position -> x + half_side_length; x++){
+        for(int y = square -> position -> y - half_side_length; y < square -> position -> y + half_side_length; y++){
             xy_plot_pixel(x, y, 0xFF0000);    
         }
     }

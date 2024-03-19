@@ -71,6 +71,8 @@ void moveSquare(Square* square, bool upKey, bool downKey, bool rightKey, bool le
             square -> acceleration = pointStruct(-acceleration, 0);
         }
     }
+    square -> position = addPoints(square -> position, square -> velocity);
+    square -> velocity = addPoints(square -> velocity, square -> acceleration);
 }
 
 //update square properties on gameloop
@@ -81,7 +83,6 @@ void updateSquare(Square* square){
 
     //check for collisions, manually change velocity to 0
     //also need to set a max velocity probably
-
 }
 
 //circle 'constructor'
