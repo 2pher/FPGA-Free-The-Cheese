@@ -21,7 +21,7 @@ Square* squareStruct(point* position, int sideLength);
 void moveSquare(Square* square, bool upKey,  bool downKey, bool rightKey, bool leftKey);
 
 //update square properties on gameloop
-void updateSquare();
+void updateSquare(Square* square);
 
 //circle struct
 typedef struct Circle {

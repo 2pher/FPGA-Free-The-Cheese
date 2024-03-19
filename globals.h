@@ -5,6 +5,11 @@
 #include <stdbool.h>
 #include <math.h>
 
+#include "utilities.h"
+#include "shapes.h"
+#include "draw.h"
+
+
 /* Cyclone V FPGA devices */
 #define LEDR_BASE 0xFF200000
 #define HEX3_HEX0_BASE 0xFF200020

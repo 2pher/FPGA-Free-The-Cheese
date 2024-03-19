@@ -25,7 +25,7 @@ Square* squareStruct(point* position, int sideLength){
     return newSquare;
 
 }
-//uodate acceleration based on key press
+//update acceleration based on key press
 void moveSquare(Square* square, bool upKey, bool downKey, bool rightKey, bool leftKey){
     int acceleration = 1; //to be changed in testing
 
@@ -75,6 +75,7 @@ void moveSquare(Square* square, bool upKey, bool downKey, bool rightKey, bool le
 
 //update square properties on gameloop
 void updateSquare(Square* square){
+    int maxVelocity = 10; //to be changed in testing
     square -> position = addPoints(square -> position, square -> velocity);
     square -> velocity = addPoints(square -> velocity, square -> acceleration);
 
