@@ -11,6 +11,7 @@ int main() {
     while(true){
         draw_player_square(newSquare);
         moveSquare(newSquare, 0, 0, 1, 0);
+        display_HEX(byte1, byte2, byte3);
     }
     
 }

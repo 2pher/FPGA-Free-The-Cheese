@@ -99,6 +99,6 @@ extern bool LEFT, RIGHT, UP, DOWN;
 
 
 // Global variables
-extern voltatile char byte1, byte2, byte3;
+extern volatile char byte1, byte2, byte3;
 
 #endif
