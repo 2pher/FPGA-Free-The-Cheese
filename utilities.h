@@ -11,7 +11,10 @@ typedef struct point {
 //'constructor' function for point struct
 point* pointStruct(int x, int y);
 
-//rectangle hitboxes. Can use for 
+//add two points together
+point* addPoints(point* point1, point* point2);
+
+//hitbox for square
 typedef struct squareHitbox {
 
     point* centre;
@@ -24,6 +27,7 @@ typedef struct squareHitbox {
 squareHitbox* centreSquareHitboxStruct(point* centre, int sideLength);
 squareHitbox* cornerPointsSquareHitboxStruct(point* topLeftPoint, point* bottomRightPoint);
 
+//hitbox for circles. Intended to be moving obstacles
 typedef struct circleHitbox {
     
     point centre;
@@ -31,6 +35,7 @@ typedef struct circleHitbox {
 
 } circleHitbox;
 
+//'constructor for circle hitbox
 circleHitbox* circleHitboxStruct(point* centre, int radius);
 
 //3 versions of distance formula using xy or point structs

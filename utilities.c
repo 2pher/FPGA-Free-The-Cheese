@@ -9,6 +9,12 @@ point* pointStruct(int x1, int y1){
     return newPoint;
 }
 
+//add 2 points together
+point* addPoints(point* point1, point* point2){
+    point* newPoint = pointStruct(point1 -> x + point2 -> x, point1 -> y + point2 -> y);
+    return newPoint;
+}
+
 //'constructor' function for square hitbox structs
 //only for odd valued sideLength
 squareHitbox* centreSquareHitboxStruct(point* centre, int sideLength){
@@ -33,9 +39,6 @@ squareHitbox* cornerPointsSquareHitboxStruct(point* topLeft, point* bottomRight)
 //circleHitbox 'constructor'
 circleHitbox* circleHitboxStruct(point* centre, int radius){
 //to be completed
-
-
-
 }
 
 //3 versions of distance formula, implemented via normal distance formula eqn. It's in double but could 
