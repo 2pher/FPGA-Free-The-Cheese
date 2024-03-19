@@ -25,5 +25,9 @@
 #define CTL0 0x1C000000
 #define CTL3 0x1C00000C
 
+extern int pixel_buffer_start;
+
+extern bool LEFT, RIGHT, UP, DOWN;
+
 
 #endif
