@@ -9,9 +9,33 @@ point* pointStruct(int x1, int y1){
     return newPoint;
 }
 
-//'constructor' function for rectangle hitbox structs
-rectangleHitbox* rectangleHitboxStruct(point centre, int length, int width){
-    
+//'constructor' function for square hitbox structs
+//only for odd valued sideLength
+squareHitbox* centreSquareHitboxStruct(point* centre, int sideLength){
+    squareHitbox* hitbox;
+    hitbox -> centre = centre;
+    point* topLeft = pointStruct(centre -> x - (sideLength - 1) / 2, centre -> y - (sideLength - 1) / 2);
+    point* bottomRight = pointStruct(centre -> x + (sideLength - 1) / 2, centre -> y + (sideLength - 1) / 2);
+    hitbox -> topLeftPoint = topLeft;
+    hitbox -> bottomRightPoint = bottomRight;
+    return hitbox;
+}
+
+//given corners, may not necessarily be a square
+squareHitbox* cornerPointsSquareHitboxStruct(point* topLeft, point* bottomRight){
+    squareHitbox* hitbox;
+    hitbox -> centre = pointStruct(-1, -1);
+    hitbox -> topLeftPoint = topLeft;
+    hitbox -> bottomRightPoint = bottomRight;
+    return hitbox;
+}
+
+//circleHitbox 'constructor'
+circleHitbox* circleHitboxStruct(point* centre, int radius){
+//to be completed
+
+
+
 }
 
 //3 versions of distance formula, implemented via normal distance formula eqn. It's in double but could 

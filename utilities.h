@@ -8,17 +8,21 @@ typedef struct point {
 
 } point;
 
+//'constructor' function for point struct
 point* pointStruct(int x, int y);
 
-typedef struct rectangleHitbox {
+//rectangle hitboxes. Can use for 
+typedef struct squareHitbox {
 
-    point centre;
-    point bottomLeftPoint;
-    point topRightPoint;
+    point* centre;
+    point* topLeftPoint;
+    point* bottomRightPoint;
 
-} rectangleHitbox;
+} squareHitbox;
 
-rectangleHitbox* rectangleHitboxStruct(point centre, int length, int width);
+//'constructor' functions for rectangles
+squareHitbox* centreSquareHitboxStruct(point* centre, int sideLength);
+squareHitbox* cornerPointsSquareHitboxStruct(point* topLeftPoint, point* bottomRightPoint);
 
 typedef struct circleHitbox {
     
@@ -27,7 +31,7 @@ typedef struct circleHitbox {
 
 } circleHitbox;
 
-
+circleHitbox* circleHitboxStruct(point* centre, int radius);
 
 //3 versions of distance formula using xy or point structs
 double xyxyDistanceFormula(int x1, int y1, int x2, int y2);
