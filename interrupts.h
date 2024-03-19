@@ -59,7 +59,7 @@ void PS2_ISR(void) {
 
 void display_HEX(char b1, char b2, char b3) {
    volatile int * HEX3_HEX0_ptr = (int *)HEX3_HEX0_BASE;
-    volatile int * HEX5_HEX4_ptr = (int *)HEX5_HEX4_BASE;
+   volatile int * HEX5_HEX4_ptr = (int *)HEX5_HEX4_BASE;
 
     /* SEVEN_SEGMENT_DECODE_TABLE gives the on/off settings for all segments in
      * a single 7-seg display, for the hex digits 0 - F */
@@ -83,8 +83,16 @@ void display_HEX(char b1, char b2, char b3) {
     *(HEX5_HEX4_ptr) = *(int *)(hex_segs + 4);
 }
 
-void display_LED(void) {
-    
+void update_LED(void) {
+    volatile int * LED_ptr = (int *)LED_BASE;
+
+    *(LED_ptr) = 0x0;
+
+    if (UP) *(LED_ptr) = 0x8;
+    if (LEFT) *(LED_ptr) = 0x4;
+    if (RIGHT) *(LED_ptr) = 0x2;
+    if (DOWN) *(LED_ptr) = 0x1;
+
 }
 
 #endif
