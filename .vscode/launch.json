@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "g:/My Drive/UofT Engineering/Winter 2024/ECE243H1 S Computer Organization/ECE243 Project/ECE243-Free-The-Cheese",
-      "program": "g:/My Drive/UofT Engineering/Winter 2024/ECE243H1 S Computer Organization/ECE243 Project/ECE243-Free-The-Cheese/build/Debug/outDebug",
+      "cwd": "c:/Users/chris/Desktop/Code/Year2.2/Free The Cheese/ECE243-Free-The-Cheese",
+      "program": "c:/Users/chris/Desktop/Code/Year2.2/Free The Cheese/ECE243-Free-The-Cheese/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
