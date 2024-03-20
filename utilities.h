@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "globalHeader.h"
 
 //represents a pixel location on screen
 typedef struct point {

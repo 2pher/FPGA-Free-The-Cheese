@@ -1,4 +1,4 @@
-#include "globals.h"
+#include "globalHeader.h"
 #include "utilities.h"
 
 //player square struct

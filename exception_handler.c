@@ -1,6 +1,6 @@
-#include "globals.h"
+#include "globalHeader.h"
 
-/* function prototypes */
+/* Function prototypes */
 void main(void);
 void interrupt_handler(void);
 void interval_timer_ISR(void);
@@ -8,13 +8,15 @@ void PS2_ISR(void);
 
 /* The assembly language code below handles CPU reset processing */
 void the_reset (void) __attribute__ ((section (".reset")));
-void the_reset (void)
+
+void the_reset (void) {
+
 /*******************************************************************************
  * Reset code. By giving the code a section attribute with the name ".reset" we
  * allow the linker program to locate this code at the proper reset vector
  * address. This code just calls the main program.
  ******************************************************************************/
-{
+
 asm (".set		noat");					// Magic, for the C compiler
 asm (".set		nobreak");				// Magic, for the C compiler
 asm ("movia		r2, main");				// Call the C language main program
@@ -25,15 +27,17 @@ asm ("jmp		r2");
  * code should not be modified; instead, the C language code in the function
  * interrupt_handler() can be modified as needed for a given application.
 */
+
 void the_exception (void) __attribute__ ((section (".exceptions")));
-void the_exception (void)
+void the_exception (void) {
+	
 /*******************************************************************************
  * Exceptions code. By giving the code a section attribute with the name
  * ".exceptions" we allow the linker program to locate this code at the proper
  * exceptions vector address.
  * This code calls the interrupt handler and later returns from the exception.
  ******************************************************************************/
-{
+
 asm ( ".set		noat" );				// Magic, for the C compiler
 asm ( ".set		nobreak" );				// Magic, for the C compiler
 asm ( "subi		sp, sp, 128" );

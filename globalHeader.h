@@ -1,5 +1,5 @@
-#ifndef GLOBALS_H
-#define GLOBALS_H
+#ifndef GLOBALHEADER_H
+#define GLOBALHEADER_H
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -92,11 +92,5 @@
 #define NIOS2_READ_CPUID(dest) \
 	do { dest = __builtin_rdctl(5); } while (0)
 
-
-
-// Global variables
-extern volatile char byte1, byte2, byte3;
-extern int pixel_buffer_start;
-extern bool LEFT, RIGHT, UP, DOWN;
 
 #endif
