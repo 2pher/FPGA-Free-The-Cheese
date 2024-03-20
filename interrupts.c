@@ -1,26 +1,24 @@
 #include "globalHeader.h"
 
-/*******************************************************************************
- * Global variables in globals.c
- ******************************************************************************/
+/* Declare global variables */
 extern volatile char byte1, byte2, byte3;
 extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT; 
 
 /*******************************************************************************
- * Forward function declarations
- ******************************************************************************/
-void enableGlobalInterrupts(void);
-void PS2_ISR(void);
-void display_HEX(char, char, char);
-void update_LED(void);
-
-
-/*******************************************************************************
- * Interrupt enabler for devices and board
+ * Global interrupt enabler for board
  ******************************************************************************/
 void enableGlobalInterrupts(void) {
     NIOS2_WRITE_ENABLE(0x80);   // Enable interrupts for PS2 (0x80)
     NIOS2_WRITE_STATUS(1);      // Enable Nios II interrupts
+}
+
+/*******************************************************************************
+ * Global interrupt enabler for board
+ ******************************************************************************/
+void configPS2(void) {
+    volatile int * PS2_ptr = (int *)PS2_BASE;
+    *(PS2_ptr) = 0xFF;      // Reset
+    *(PS2_ptr + 1) = 0x1;   // Enable interrupts in PS2 control register
 }
 
 /*******************************************************************************
@@ -64,7 +62,7 @@ void PS2_ISR(void) {
             if (break_code) KEY_RIGHT = false; 
             else KEY_RIGHT = true;
 
-        } else if (byte3 == (char) 0x1B) {
+        } else if (byte3 == (char) 0x23) {
             // S key pressed
             if (break_code) KEY_DOWN = false; 
             else KEY_DOWN = true;
