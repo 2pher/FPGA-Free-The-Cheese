@@ -12,6 +12,8 @@ extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT;
 void enableGlobalInterrupts(void);
 void PS2_ISR(void);
 void display_HEX(char, char, char);
+void update_LED(void);
+
 
 /*******************************************************************************
  * Interrupt enabler for devices and board
