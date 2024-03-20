@@ -1,4 +1,9 @@
-#include "globalHeader.h"
+#ifndef DRAW_H
+#define DRAW_H
+
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
 #include "utilities.h"
 
 //plot 1 pixel given location and colour
@@ -17,4 +22,4 @@ void draw_line(int x0, int y0, int x1, int y1, short int colour);
 //draw player square
 void draw_player_square(Square* square);
 	
-
+#endif

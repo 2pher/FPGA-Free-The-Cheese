@@ -1,6 +1,4 @@
 #include "globalHeader.h"
-#include "utilities.h"
-#include "shapes.h"
 
 //square 'constructor'
 Square* squareStruct(point* position, int sideLength){

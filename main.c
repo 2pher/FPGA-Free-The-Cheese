@@ -30,6 +30,7 @@ int main(void) {
     KEY_LEFT = false;
     KEY_RIGHT = false;
 
+
     //point* initialLocation = pointStruct(50, 50);
     //Square* newSquare = squareStruct(initialLocation, 11);
 

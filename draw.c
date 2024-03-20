@@ -1,5 +1,4 @@
 #include "globalHeader.h"
-#include "draw.h"
 
 //plot 1 pixel given xy and colour
 void xy_plot_pixel(int x, int y, short int line_color){

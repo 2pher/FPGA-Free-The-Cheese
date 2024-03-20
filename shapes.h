@@ -1,4 +1,9 @@
-#include "globalHeader.h"
+#ifndef SHAPES_H
+#define SHAPES_H
+
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
 #include "utilities.h"
 
 //player square struct
@@ -40,3 +45,4 @@ typedef struct Circle {
 //circle 'constructor'
 Circle* circleStruct(point* position, int radius, point** path);
 
+#endif

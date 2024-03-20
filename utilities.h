@@ -1,4 +1,9 @@
-#include "globalHeader.h"
+#ifndef UTILITIES_H
+#define UTILITIES_H
+
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
 
 //represents a pixel location on screen
 typedef struct point {
@@ -45,7 +50,6 @@ double xyPointDistanceFormula(int x1, int y1, point* point2);
 
 double pointPointDistanceFormula(point* point1, point* point2);
 
-
-
+#endif
 
 
