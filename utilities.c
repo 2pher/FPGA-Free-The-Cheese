@@ -1,4 +1,4 @@
-#include "globalHeader.h"
+#include <utilities.h>
 
 //'constructor' function for point structs
 point* pointStruct(int x1, int y1){

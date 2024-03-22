@@ -1,4 +1,6 @@
-#include "globalHeader.h"
+#include <draw.h>
+
+extern volatile int pixel_buffer_start;
 
 //plot 1 pixel given xy and colour
 void xy_plot_pixel(int x, int y, short int line_color){
@@ -80,4 +82,16 @@ void draw_player_square(Square* square){
         }
     }
 }
-	
+
+// Wait for screen to finish drawing
+void wait_for_vsync() {
+	volatile int *pixel_ctrl_ptr = (int *) PIXEL_BUF_CTRL_BASE;
+	int buffer_status_bit;
+	*(pixel_ctrl_ptr) = 1;							// Write 1 into buffer register, causing frame buffer swap
+	buffer_status_bit = *(pixel_ctrl_ptr + 1) & 1;	// Isolates S bit
+
+	while (buffer_status_bit != 0) {
+		// Wait until drawing completely finished
+		buffer_status_bit = *(pixel_ctrl_ptr + 1) & 1;
+	}
+}

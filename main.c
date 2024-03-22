@@ -1,6 +1,7 @@
 #include "globalHeader.h"
 
 /* Declare global variables */
+extern volatile int pixel_buffer_start;
 extern volatile char byte1, byte2, byte3;
 extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT;
 
@@ -16,6 +17,7 @@ void update_LED(void);
 int main(void) {
 
     volatile int* pixel_ctrl_ptr = (int *)PIXEL_BUF_CTRL_BASE;
+    pixel_buffer_start = *(pixel_ctrl_ptr + 1);
     
     // Enable interrupts device-wide and board-wide
     configPS2();

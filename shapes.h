@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include "utilities.h"
+#include "images.h"
 
 //player square struct
 typedef struct Square {
