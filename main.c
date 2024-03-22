@@ -12,8 +12,8 @@ void display_HEX(char, char, char);
 void update_LED(void);
 
 /* Variables for initializtion*/
-uint16_t buffer1[240][512];
-uint16_t buffer2[240][512];
+uint16_t buffer1[240][512]; // Store into front buffer
+uint16_t buffer2[240][512]; // Store into back buffer
 
 
 /*******************************************************************************
@@ -43,16 +43,16 @@ int main(void) {
     pixel_buffer_start = *(pixel_ctrl_ptr + 1); // We draw on back buffer
     clear_screen(); /* NOT SURE IF NEEDED; PLAY AROUND */
 
-    pixel_buffer_start = &BACKGROUND;
-    wait_for_vsync();
+    pixel_buffer_start = &BACKGROUND; // This should store BACKGROUND data into pixel_buffer_start?
+    wait_for_vsync(); // Swap back->front, wait for all pixels to be loaded
 
 
     // DRAW SOME KIND OF TITLE SCREEN
     // Initialize TITLE_SCREEN in images.h
-    uint16_t screen_buff[240][320] = {0};
+    //uint16_t screen_buff[240][320] = {0};
     /* memcpy(&screen_buff, &TITLE_SCREEN, 240*320*sizeof(uint16_t));
     pixel_buffer_start = &screen_buff; */
-    wait_for_vsync();
+    //wait_for_vsync();
 
 
     //point* initialLocation = pointStruct(50, 50);
