@@ -25,9 +25,11 @@ Square* squareStruct(point* position, int sideLength);
 
 //move square based on key press
 void moveSquare(Square* square, bool upKey,  bool downKey, bool rightKey, bool leftKey);
+//no acceleration, only linear movement speed
+void moveSquareNoAcc(Square* square, bool upKey,  bool downKey, bool rightKey, bool leftKey);
 
 //update square properties on gameloop
-void updateSquare(Square* square);
+void updateSquare(Square* square, bool upKey, bool downKey, bool rightKey, bool leftKey);
 
 //circle struct
 typedef struct Circle {
