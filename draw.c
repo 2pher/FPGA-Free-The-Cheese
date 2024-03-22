@@ -18,6 +18,12 @@ void point_plot_pixel(point* location, short int line_color){
 
 }
 
+// Print default background
+void print_background() {
+	pixel_buffer_start = &BACKGROUND;
+	wait_for_vsync();
+}
+
 //clear screen
 void clear_screen(){
 	for(int x = 0; x < 320; x++){
