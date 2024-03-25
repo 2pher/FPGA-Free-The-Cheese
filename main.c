@@ -1,4 +1,5 @@
 #include "globalHeader.h"
+#include "draw.h"
 #include "death_counter.h"
 #include "images.h"
 
@@ -6,17 +7,20 @@
 extern volatile int pixel_buffer_start;
 extern volatile char byte1, byte2, byte3;
 extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT;
+extern int DEATH_COUNT;
 
 /* Function prototypes */
 void enableGlobalInterrupts(void);
 void configPS2(void);
 void display_HEX(char, char, char);
 void update_LED(void);
+void drawDeathCounter(void);
+void updateDeathCounter(void);
+void updateCount(int, int);
 
 /* Variables for initializtion*/
 uint16_t buffer1[240][512]; // Store into front buffer
 uint16_t buffer2[240][512]; // Store into back buffer
-
 
 /*******************************************************************************
  * Main program of Free Da Cheese
@@ -36,6 +40,7 @@ int main(void) {
     KEY_DOWN = false;
     KEY_LEFT = false;
     KEY_RIGHT = false;
+    DEATH_COUNT = 0;
 
     // Initialize VGA
     *(pixel_ctrl_ptr + 1) = (int) &buffer1;     // Initialize memory in back buffer
@@ -66,4 +71,87 @@ int main(void) {
         update_LED();
     }
     
+}
+
+void drawDeathCounter() {
+    for (int i = 0; i < sizeof(DEATH_COUNTER); i++) {
+        xy_plot_pixel(DEATH_COUNTER[i].x, DEATH_COUNTER[i].y, 0xFFFF);
+    }
+    wait_for_vsync();
+}
+
+void updateDeathCounter() {
+    // Reset current counter
+    for (int x = 0; x < 24; x++) {
+        for (int y = 0; y < 20; y++) {
+            // Fill it with whatever the background colour was
+            xy_plot_pixel(x + 146, y + 7, BACKGROUND[y+7][x+146]);
+        }
+    }
+    wait_for_vsync(); // SEE WITH LAB 7 CODE IF WE NEED THIS!
+
+    if (DEATH_COUNT >= 10) {
+        // We need to initialize counter for two digits
+        updateCount(DEATH_COUNT / 10, 1); // Extract MSD
+        updateCount(DEATH_COUNT % 10, 2); // Extract LSD
+    } else {
+        // Do first one only
+        updateCount(DEATH_COUNT, 1);
+    }
+    wait_for_vsync();
+}
+
+void updateCount(int num, int digit) {
+    // 146, 158, 7
+    if (num = 0) {
+        for (int i = 0; i < sizeof(NUM_0); i++) {
+            if (digit == 1) xy_plot_pixel(NUM_0[i].x + 146, NUM_0[i].y + 7, 0xFFFF);
+            else xy_plot_pixel(NUM_0[i].x + 158, NUM_0[i].y + 7, 0xFFFF);
+        }
+    } else if (num = 1) {
+        for (int i = 0; i < sizeof(NUM_1); i++) {
+            if (digit == 1) xy_plot_pixel(NUM_1[i].x + 146, NUM_1[i].y + 7, 0xFFFF);
+            else xy_plot_pixel(NUM_1[i].x + 158, NUM_1[i].y + 7, 0xFFFF);
+        }
+    } else if (num = 2) {
+        for (int i = 0; i < sizeof(NUM_2); i++) {
+            if (digit == 1) xy_plot_pixel(NUM_2[i].x + 146, NUM_2[i].y + 7, 0xFFFF);
+            else xy_plot_pixel(NUM_2[i].x + 158, NUM_2[i].y + 7, 0xFFFF);
+        }
+    } else if (num = 3) {
+        for (int i = 0; i < sizeof(NUM_3); i++) {
+            if (digit == 1) xy_plot_pixel(NUM_3[i].x + 146, NUM_3[i].y + 7, 0xFFFF);
+            else xy_plot_pixel(NUM_3[i].x + 158, NUM_3[i].y + 7, 0xFFFF);
+        }
+    } else if (num = 4) {
+        for (int i = 0; i < sizeof(NUM_4); i++) {
+            if (digit == 1) xy_plot_pixel(NUM_4[i].x + 146, NUM_4[i].y + 7, 0xFFFF);
+            else xy_plot_pixel(NUM_4[i].x + 158, NUM_4[i].y + 7, 0xFFFF);
+        }
+    } else if (num = 5) {
+        for (int i = 0; i < sizeof(NUM_5); i++) {
+            if (digit == 1) xy_plot_pixel(NUM_5[i].x + 146, NUM_5[i].y + 7, 0xFFFF);
+            else xy_plot_pixel(NUM_5[i].x + 158, NUM_5[i].y + 7, 0xFFFF);
+        }
+    } else if (num = 6) {
+        for (int i = 0; i < sizeof(NUM_6); i++) {
+            if (digit == 1) xy_plot_pixel(NUM_6[i].x + 146, NUM_6[i].y + 7, 0xFFFF);
+            else xy_plot_pixel(NUM_6[i].x + 158, NUM_6[i].y + 7, 0xFFFF);
+        }
+    } else if (num = 7) {
+        for (int i = 0; i < sizeof(NUM_7); i++) {
+            if (digit == 1) xy_plot_pixel(NUM_7[i].x + 146, NUM_7[i].y + 7, 0xFFFF);
+            else xy_plot_pixel(NUM_7[i].x + 158, NUM_7[i].y + 7, 0xFFFF);
+        }
+    } else if (num = 8) {
+        for (int i = 0; i < sizeof(NUM_8); i++) {
+            if (digit == 1) xy_plot_pixel(NUM_8[i].x + 146, NUM_8[i].y + 7, 0xFFFF);
+            else xy_plot_pixel(NUM_8[i].x + 158, NUM_8[i].y + 7, 0xFFFF);
+        }
+    } else { // num = 9
+        for (int i = 0; i < sizeof(NUM_9); i++) {
+            if (digit == 1) xy_plot_pixel(NUM_9[i].x + 146, NUM_9[i].y + 7, 0xFFFF);
+            else xy_plot_pixel(NUM_9[i].x + 158, NUM_9[i].y + 7, 0xFFFF);
+        }
+    }
 }

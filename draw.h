@@ -2,6 +2,8 @@
 #define DRAW_H
 
 #include "globalHeader.h"
+#include "utilities.h"
+#include "shapes.h"
 
 //plot 1 pixel given location and colour
 void xy_plot_pixel(int x, int y, short int line_color);

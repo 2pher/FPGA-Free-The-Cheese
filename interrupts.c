@@ -2,7 +2,8 @@
 
 /* Declare global variables */
 extern volatile char byte1, byte2, byte3;
-extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT; 
+extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT;
+extern int DEATH_COUNT; // TO BE REMOVED
 
 /*******************************************************************************
  * Global interrupt enabler for board
@@ -68,6 +69,7 @@ void PS2_ISR(void) {
             else KEY_DOWN = true;
         }
 
+        DEATH_COUNT++; // TO BE REMOVED
     }
     
     return;
