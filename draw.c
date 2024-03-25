@@ -28,7 +28,7 @@ void print_background() {
 void clear_screen(){
 	for(int x = 0; x < 320; x++){
 		for(int y = 0; y < 240; y++){
-			plot_pixel(x, y, 0xFFFFFF);
+			xy_plot_pixel(x, y, 0xFFFFFF);
 		}
 	}
 }
@@ -67,9 +67,9 @@ void draw_line(int x0, int y0, int x1, int y1, short int colour){
 
  	for(int x = x0; x <= x1; x++){
  		if(is_steep){
- 			plot_pixel(y, x, colour);
+ 			xy_plot_pixel(y, x, colour);
 		}else{
- 			plot_pixel(x, y, colour);
+ 			xy_plot_pixel(x, y, colour);
 		}
  		error = error + deltay;
  		if(error > 0){

@@ -931,7 +931,4 @@ point NUM_9[] = {
     { 4, 11 },
 };
 
-void draw
-
-
 #endif

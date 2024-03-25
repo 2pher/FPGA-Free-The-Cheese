@@ -8,6 +8,7 @@ extern volatile int pixel_buffer_start;
 extern volatile char byte1, byte2, byte3;
 extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT;
 extern int DEATH_COUNT;
+int OLD_COUNT;
 
 /* Function prototypes */
 void enableGlobalInterrupts(void);
@@ -30,7 +31,7 @@ int main(void) {
     
     // Enable interrupts device-wide and board-wide
     configPS2();
-    enableInterrupts();
+    enableGlobalInterrupts();
     
     // Initialize global variables
     byte1 = 0;
@@ -41,6 +42,7 @@ int main(void) {
     KEY_LEFT = false;
     KEY_RIGHT = false;
     DEATH_COUNT = 0;
+    OLD_COUNT = 0;
 
     // Initialize VGA
     *(pixel_ctrl_ptr + 1) = (int) &buffer1;     // Initialize memory in back buffer
@@ -60,6 +62,10 @@ int main(void) {
     }
     wait_for_vsync();
 
+    drawDeathCounter();
+    updateCount(0, 1);
+    wait_for_vsync();
+
 
     //point* initialLocation = pointStruct(50, 50);
     //Square* newSquare = squareStruct(initialLocation, 11);
@@ -69,18 +75,24 @@ int main(void) {
         //moveSquare(newSquare, 0, 0, 1, 0);
         display_HEX(byte1, byte2, byte3);
         update_LED();
+        //updateDeathCounter();
     }
     
 }
 
 void drawDeathCounter() {
-    for (int i = 0; i < sizeof(DEATH_COUNTER); i++) {
+    for (int i = 0; i < (sizeof(DEATH_COUNTER) / sizeof(DEATH_COUNTER[0])); i++) {
         xy_plot_pixel(DEATH_COUNTER[i].x, DEATH_COUNTER[i].y, 0xFFFF);
     }
     wait_for_vsync();
 }
 
 void updateDeathCounter() {
+    // Check if the counter needs to be redrawn
+    if (OLD_COUNT == DEATH_COUNT) {
+        return;
+    }
+
     // Reset current counter
     for (int x = 0; x < 24; x++) {
         for (int y = 0; y < 20; y++) {
@@ -103,53 +115,53 @@ void updateDeathCounter() {
 
 void updateCount(int num, int digit) {
     // 146, 158, 7
-    if (num = 0) {
-        for (int i = 0; i < sizeof(NUM_0); i++) {
+    if (num == 0) {
+        for (int i = 0; i < (sizeof(NUM_0) / sizeof(NUM_0[0])); i++) {
             if (digit == 1) xy_plot_pixel(NUM_0[i].x + 146, NUM_0[i].y + 7, 0xFFFF);
             else xy_plot_pixel(NUM_0[i].x + 158, NUM_0[i].y + 7, 0xFFFF);
         }
-    } else if (num = 1) {
-        for (int i = 0; i < sizeof(NUM_1); i++) {
+    } else if (num == 1) {
+        for (int i = 0; i < (sizeof(NUM_1) / sizeof(NUM_1[0])); i++) {
             if (digit == 1) xy_plot_pixel(NUM_1[i].x + 146, NUM_1[i].y + 7, 0xFFFF);
             else xy_plot_pixel(NUM_1[i].x + 158, NUM_1[i].y + 7, 0xFFFF);
         }
-    } else if (num = 2) {
-        for (int i = 0; i < sizeof(NUM_2); i++) {
+    } else if (num == 2) {
+        for (int i = 0; i < (sizeof(NUM_2) / sizeof(NUM_2[0])); i++) {
             if (digit == 1) xy_plot_pixel(NUM_2[i].x + 146, NUM_2[i].y + 7, 0xFFFF);
             else xy_plot_pixel(NUM_2[i].x + 158, NUM_2[i].y + 7, 0xFFFF);
         }
-    } else if (num = 3) {
-        for (int i = 0; i < sizeof(NUM_3); i++) {
+    } else if (num == 3) {
+        for (int i = 0; i < (sizeof(NUM_3) / sizeof(NUM_3[0])); i++) {
             if (digit == 1) xy_plot_pixel(NUM_3[i].x + 146, NUM_3[i].y + 7, 0xFFFF);
             else xy_plot_pixel(NUM_3[i].x + 158, NUM_3[i].y + 7, 0xFFFF);
         }
-    } else if (num = 4) {
-        for (int i = 0; i < sizeof(NUM_4); i++) {
+    } else if (num == 4) {
+        for (int i = 0; i < (sizeof(NUM_4) / sizeof(NUM_4[0])); i++) {
             if (digit == 1) xy_plot_pixel(NUM_4[i].x + 146, NUM_4[i].y + 7, 0xFFFF);
             else xy_plot_pixel(NUM_4[i].x + 158, NUM_4[i].y + 7, 0xFFFF);
         }
-    } else if (num = 5) {
-        for (int i = 0; i < sizeof(NUM_5); i++) {
+    } else if (num == 5) {
+        for (int i = 0; i < (sizeof(NUM_5) / sizeof(NUM_5[0])); i++) {
             if (digit == 1) xy_plot_pixel(NUM_5[i].x + 146, NUM_5[i].y + 7, 0xFFFF);
             else xy_plot_pixel(NUM_5[i].x + 158, NUM_5[i].y + 7, 0xFFFF);
         }
-    } else if (num = 6) {
-        for (int i = 0; i < sizeof(NUM_6); i++) {
+    } else if (num == 6) {
+        for (int i = 0; i < (sizeof(NUM_6) / sizeof(NUM_6[0])); i++) {
             if (digit == 1) xy_plot_pixel(NUM_6[i].x + 146, NUM_6[i].y + 7, 0xFFFF);
             else xy_plot_pixel(NUM_6[i].x + 158, NUM_6[i].y + 7, 0xFFFF);
         }
-    } else if (num = 7) {
-        for (int i = 0; i < sizeof(NUM_7); i++) {
+    } else if (num == 7) {
+        for (int i = 0; i < (sizeof(NUM_7) / sizeof(NUM_7[0])); i++) {
             if (digit == 1) xy_plot_pixel(NUM_7[i].x + 146, NUM_7[i].y + 7, 0xFFFF);
             else xy_plot_pixel(NUM_7[i].x + 158, NUM_7[i].y + 7, 0xFFFF);
         }
-    } else if (num = 8) {
-        for (int i = 0; i < sizeof(NUM_8); i++) {
+    } else if (num == 8) {
+        for (int i = 0; i < (sizeof(NUM_8) / sizeof(NUM_8[0])); i++) {
             if (digit == 1) xy_plot_pixel(NUM_8[i].x + 146, NUM_8[i].y + 7, 0xFFFF);
             else xy_plot_pixel(NUM_8[i].x + 158, NUM_8[i].y + 7, 0xFFFF);
         }
     } else { // num = 9
-        for (int i = 0; i < sizeof(NUM_9); i++) {
+        for (int i = 0; i < (sizeof(NUM_9) / sizeof(NUM_9[0])); i++) {
             if (digit == 1) xy_plot_pixel(NUM_9[i].x + 146, NUM_9[i].y + 7, 0xFFFF);
             else xy_plot_pixel(NUM_9[i].x + 158, NUM_9[i].y + 7, 0xFFFF);
         }

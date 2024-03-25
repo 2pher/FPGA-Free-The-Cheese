@@ -67,9 +67,10 @@ void PS2_ISR(void) {
             // S key pressed
             if (break_code) KEY_DOWN = false; 
             else KEY_DOWN = true;
+        
+        } else if (byte2 != (char) 0xF0 && byte2 != (char) 0x59 && byte3 == (char) 0x59) {
+            DEATH_COUNT++; // TO BE REMOVED
         }
-
-        DEATH_COUNT++; // TO BE REMOVED
     }
     
     return;
