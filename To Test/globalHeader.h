@@ -6,6 +6,12 @@
 #include <stdint.h>
 #include <math.h>
 
+#include "utilities.h"
+#include "shapes.h"
+#include "draw.h"
+#include "images.h"
+
+
 #define BOARD "DE1-SoC"
 
 /* Memory */
