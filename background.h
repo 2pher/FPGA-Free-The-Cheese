@@ -1,70 +1,10 @@
+#ifndef IMAGES_H
+#define IMAGES_H
+
 #include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-
-#define BOARD "DE1-SoC"
-
-/* Memory */
-#define DDR_BASE 0x40000000
-#define DDR_END 0x7FFFFFFF
-#define A9_ONCHIP_BASE 0xFFFF0000
-#define A9_ONCHIP_END 0xFFFFFFFF
-#define SDRAM_BASE 0x00000000
-#define SDRAM_END 0x03FFFFFF
-#define FPGA_PIXEL_BUF_BASE 0x08000000
-#define FPGA_PIXEL_BUF_END 0x0803FFFF
-#define FPGA_CHAR_BASE 0x09000000
-#define FPGA_CHAR_END 0x09001FFF
-
-/* Cyclone V FPGA devices */
-#define LED_BASE 0xFF200000
-#define LEDR_BASE 0xFF200000
-#define HEX3_HEX0_BASE 0xFF200020
-#define HEX5_HEX4_BASE 0xFF200030
-#define SW_BASE 0xFF200040
-#define KEY_BASE 0xFF200050
-#define JP1_BASE 0xFF200060
-#define JP2_BASE 0xFF200070
-#define PS2_BASE 0xFF200100
-#define PS2_DUAL_BASE 0xFF200108
-#define JTAG_UART_BASE 0xFF201000
-#define IrDA_BASE 0xFF201020
-#define TIMER_BASE 0xFF202000
-#define TIMER_2_BASE 0xFF202020
-#define AV_CONFIG_BASE 0xFF203000
-#define RGB_RESAMPLER_BASE 0xFF203010
-#define PIXEL_BUF_CTRL_BASE 0xFF203020
-#define CHAR_BUF_CTRL_BASE 0xFF203030
-#define AUDIO_BASE 0xFF203040
-#define VIDEO_IN_BASE 0xFF203060
-#define EDGE_DETECT_CTRL_BASE 0xFF203070
-#define ADC_BASE 0xFF204000
-
-/* Cyclone V HPS devices */
-#define HPS_GPIO1_BASE 0xFF709000
-#define I2C0_BASE 0xFFC04000
-#define I2C1_BASE 0xFFC05000
-#define I2C2_BASE 0xFFC06000
-#define I2C3_BASE 0xFFC07000
-#define HPS_TIMER0_BASE 0xFFC08000
-#define HPS_TIMER1_BASE 0xFFC09000
-#define HPS_TIMER2_BASE 0xFFD00000
-#define HPS_TIMER3_BASE 0xFFD01000
-#define FPGA_BRIDGE 0xFFD0501C
-
-/* Control registers to enable interrupts */
-#define CTL0 0x1C000000
-#define CTL3 0x1C00000C
-
-volatile int pixel_buffer_start;
-volatile char byte1, byte2, byte3;  // Saves last 3 bytes of keyboard input
-bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT;  // Bools to check if key pressed
-
-uint16_t buffer1[240][512];  // Store into front buffer
-uint16_t buffer2[240][512];  // Store into back buffer
-
-#include <stdint.h>
 
 static short int BACKGROUND[240][320] = {
     {
@@ -9189,68 +9129,4 @@ static short int BACKGROUND[240][320] = {
     },
 };
 
-int main(void);
-void xy_plot_pixel(int, int, short int line_color);
-void clear_screen();
-void wait_for_vsync();
-
-/*******************************************************************************
- * MAIN FUNCTION LETS GET IT!!!
- ******************************************************************************/
-int main(void) {
-  volatile int *pixel_ctrl_ptr = (int *)PIXEL_BUF_CTRL_BASE;
-
-  // Initialize global variables
-  byte1 = 0;
-  byte2 = 0;
-  byte3 = 0;
-  KEY_UP = false;
-  KEY_DOWN = false;
-  KEY_LEFT = false;
-  KEY_RIGHT = false;
-
-  // Initialize VGA
-  *(pixel_ctrl_ptr + 1) = (int)&buffer1;  // Initialize memory in back buffer
-  wait_for_vsync();                       // Swap back <-> front buffer
-
-  pixel_buffer_start = *pixel_ctrl_ptr;
-  clear_screen();
-
-  *(pixel_ctrl_ptr + 1) = (int)&buffer2;       // "Carve" space in back buffer
-  pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // We draw on back buffer
-  clear_screen(); /* NOT SURE IF NEEDED; PLAY AROUND */
-
-  for (int x = 0; x < 320; x++) {
-    for (int y = 0; y < 240; y++) {
-      xy_plot_pixel(x, y, BACKGROUND[y][x]);
-    }
-  }
-  wait_for_vsync();
-}
-
-void xy_plot_pixel(int x, int y, short int line_color) {
-  volatile short int *one_pixel_address;
-  one_pixel_address = pixel_buffer_start + (y << 10) + (x << 1);
-  *one_pixel_address = line_color;
-}
-
-void clear_screen() {
-  for (int x = 0; x < 320; x++) {
-    for (int y = 0; y < 240; y++) {
-      xy_plot_pixel(x, y, 0xFFFF);
-    }
-  }
-}
-
-void wait_for_vsync() {
-  volatile int *pixel_ctrl_ptr = (int *)PIXEL_BUF_CTRL_BASE;
-  int buffer_status_bit;
-  *(pixel_ctrl_ptr) =
-      1;  // Write 1 into buffer register, causing frame buffer swap
-  buffer_status_bit = *(pixel_ctrl_ptr + 1) & 1;  // Isolates S bit
-
-  while (buffer_status_bit != 0) {
-    // Wait until drawing completely finished
-    buffer_status_bit = *(pixel_ctrl_ptr + 1) & 1;
-  }
-}
+#endif
