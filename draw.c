@@ -1,6 +1,8 @@
-#include <draw.h>
+#include "draw.h"
 
 extern volatile int pixel_buffer_start;
+
+void xy_plot_pixel(int, int, short int line_color);
 
 //plot 1 pixel given xy and colour
 void xy_plot_pixel(int x, int y, short int line_color){
@@ -18,17 +20,11 @@ void point_plot_pixel(point* location, short int line_color){
 
 }
 
-// Print default background
-void print_background() {
-	pixel_buffer_start = &BACKGROUND;
-	wait_for_vsync();
-}
-
 //clear screen
 void clear_screen(){
 	for(int x = 0; x < 320; x++){
 		for(int y = 0; y < 240; y++){
-			xy_plot_pixel(x, y, 0xFFFFFF);
+			xy_plot_pixel(x, y, 0x0);
 		}
 	}
 }
@@ -80,11 +76,11 @@ void draw_line(int x0, int y0, int x1, int y1, short int colour){
 }
 
 //draw player square, ONLY ODD VALUED SQUARESIZE
-void draw_player_square(Square* square){
-    int half_side_length = (square -> sideLength - 1) / 2;
-    for(int x = square -> position -> x - half_side_length; x < square -> position -> x + half_side_length; x++){
-        for(int y = square -> position -> y - half_side_length; y < square -> position -> y + half_side_length; y++){
-            xy_plot_pixel(x, y, 0xFF0000);    
+void draw_player_square(Square* square) {
+    int half_side_length = (square->sideLength - 1) / 2;
+    for (int x = square->position->x - half_side_length; x <= square->position->x + half_side_length; x++) {
+        for (int y = square->position->y - half_side_length; y <= square->position->y + half_side_length; y++) {
+            xy_plot_pixel(x, y, 0xFF00);
         }
     }
 }

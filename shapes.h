@@ -1,9 +1,7 @@
 #ifndef SHAPES_H
 #define SHAPES_H
 
-#include <stdlib.h>
-#include <stdbool.h>
-#include <math.h>
+#include "globalHeader.h"
 #include "utilities.h"
 #include "images.h"
 
@@ -20,16 +18,18 @@ typedef struct Square {
 
 } Square;
 
+
 //square 'constructor'
 Square* squareStruct(point* position, int sideLength);
+void freeSquare(Square* s);
 
 //move square based on key press
-void moveSquare(Square* square, bool upKey,  bool downKey, bool rightKey, bool leftKey);
+void moveSquare(Square* square);
 //no acceleration, only linear movement speed
-void moveSquareNoAcc(Square* square, bool upKey,  bool downKey, bool rightKey, bool leftKey);
+void moveSquareNoAcc(Square* square);
 
 //update square properties on gameloop
-void updateSquare(Square* square, bool upKey, bool downKey, bool rightKey, bool leftKey);
+void updateSquare(Square* square);
 
 //circle struct
 typedef struct Circle {

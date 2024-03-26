@@ -1,4 +1,5 @@
 #include "globalHeader.h"
+#include "interrupts.h"
 
 /* Declare global variables */
 extern volatile char byte1, byte2, byte3;

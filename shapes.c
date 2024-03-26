@@ -1,72 +1,81 @@
-#include <shapes.h>
+#include "shapes.h"
+
+extern bool KEY_UP, KEY_DOWN, KEY_RIGHT, KEY_LEFT;
 
 //square 'constructor'
-Square* squareStruct(point* position, int sideLength){
+Square* squareStruct(point* pos, int sideLength) {
+    Square* newSquare = malloc(sizeof(Square)); // Allocate memory
+    if (newSquare != NULL) { // Check if memory allocation was successful
+        point* vel = pointStruct(0, 0);
+        point* acc = pointStruct(0, 0);
+        int hitboxSideLength = sideLength - 2;
+        squareHitbox* newHitbox = centreSquareHitboxStruct(pos, hitboxSideLength);
 
-    //create points
-    Square* newSquare;
-    point* pos = position;
-    point* vel = pointStruct(0, 0);
-    point* acc = pointStruct(0, 0);
-    int hitboxSideLength = sideLength - 2;
-    squareHitbox* newHitbox = centreSquareHitboxStruct(position, hitboxSideLength);
-
-    //assign values to square
-    newSquare -> position = pos;
-    newSquare -> velocity = vel;
-    newSquare -> acceleration = acc;
-    newSquare -> sideLength = sideLength;
-    newSquare -> hitbox = newHitbox;
-    newSquare -> hitboxSideLength = hitboxSideLength;
-    newSquare -> isAlive = true;
-
+        newSquare->position = pos;
+        newSquare->velocity = vel;
+        newSquare->acceleration = acc;
+        newSquare->sideLength = sideLength;
+        newSquare->hitbox = newHitbox;
+        newSquare->hitboxSideLength = hitboxSideLength;
+        newSquare->isAlive = true;
+    }
     return newSquare;
-
 }
+
+void freeSquare(Square* s) {
+    freePoint(s->position);
+    freePoint(s->velocity);
+    freePoint(s->acceleration);
+    free(s->hitbox->topLeftPoint);
+    free(s->hitbox->bottomRightPoint);
+    free(s->hitbox);
+    free(s);
+}
+
 //update acceleration based on key press
-void moveSquare(Square* square, bool upKey, bool downKey, bool rightKey, bool leftKey){
+void moveSquare(Square* square){
     int maxVelocity = 10; //to be changed in testing
     int acceleration = 1; //to be changed in testing
 
     //if pushing up and down, and either left or right
-    if((upKey && downKey) && !(leftKey && rightKey)){
-        if(rightKey && !leftKey){
+    if((KEY_UP && KEY_DOWN) && !(KEY_LEFT && KEY_RIGHT)){
+        if(KEY_RIGHT && !KEY_LEFT){
             square -> acceleration = pointStruct(acceleration, 0);
-        }else if(leftKey && !rightKey){
+        }else if(KEY_LEFT && !KEY_RIGHT){
             square -> acceleration = pointStruct(-acceleration, 0);
         }else{
             square -> acceleration = pointStruct(0, 0);
         }
     //if pushing left and right, and either up or down
-    }else if((leftKey && rightKey) && !(upKey && downKey)){
-        if(upKey && !downKey){
+    }else if((KEY_LEFT && KEY_RIGHT) && !(KEY_UP && KEY_DOWN)){
+        if(KEY_UP && !KEY_DOWN){
             square -> acceleration = pointStruct(0, -acceleration);
-        }else if(downKey && !upKey){
+        }else if(KEY_DOWN && !KEY_UP){
             square -> acceleration = pointStruct(0, acceleration);
         }else{
             square -> acceleration = pointStruct(0, 0);
         }
     //if pushing all
-    }else if(upKey && downKey && rightKey && leftKey){
+    }else if(KEY_UP && KEY_DOWN && KEY_RIGHT && KEY_LEFT){
         square -> acceleration = pointStruct(0, 0);
     }else{
         //if pushing any 2 non-opposite directions
-        if(upKey && rightKey){
+        if(KEY_UP && KEY_RIGHT){
             square -> acceleration = pointStruct(acceleration, -acceleration);
-        }else if(rightKey && downKey){
+        }else if(KEY_RIGHT && KEY_DOWN){
             square -> acceleration = pointStruct(acceleration, acceleration);
-        }else if(downKey && leftKey){
+        }else if(KEY_DOWN && KEY_LEFT){
             square -> acceleration = pointStruct(-acceleration, acceleration);
-        }else if(leftKey && upKey){
+        }else if(KEY_LEFT && KEY_UP){
             square -> acceleration = pointStruct(-acceleration, -acceleration);
         //if pushing any 1 direction
-        }else if(upKey){
+        }else if(KEY_UP){
             square -> acceleration = pointStruct(0, -acceleration);
-        }else if(rightKey){
+        }else if(KEY_RIGHT){
             square -> acceleration = pointStruct(acceleration, 0);
-        }else if(downKey){
+        }else if(KEY_DOWN){
             square -> acceleration = pointStruct(0, acceleration);
-        }else if(leftKey){
+        }else if(KEY_LEFT){
             square -> acceleration = pointStruct(-acceleration, 0);
         }
     }
@@ -75,47 +84,47 @@ void moveSquare(Square* square, bool upKey, bool downKey, bool rightKey, bool le
 }
 
 //update velocity with keypress 
-void moveSquareNoAcc(Square* square, bool upKey, bool downKey, bool rightKey, bool leftKey){
+void moveSquareNoAcc(Square* square){
     int unit_velocity = 1;
     //if pushing up and down, and either left or right
-    if((upKey && downKey) && !(leftKey && rightKey)){
-        if(rightKey && !leftKey){
+    if((KEY_UP && KEY_DOWN) && !(KEY_LEFT && KEY_RIGHT)){
+        if(KEY_RIGHT && !KEY_LEFT){
             square -> velocity = pointStruct(unit_velocity, 0);
-        }else if(leftKey && !rightKey){
+        }else if(KEY_LEFT && !KEY_RIGHT){
             square -> velocity = pointStruct(-unit_velocity, 0);
         }else{
             square -> velocity = pointStruct(0, 0);
         }
     //if pushing left and right, and either up or down
-    }else if((leftKey && rightKey) && !(upKey && downKey)){
-        if(upKey && !downKey){
+    }else if((KEY_LEFT && KEY_RIGHT) && !(KEY_UP && KEY_DOWN)){
+        if(KEY_UP && !KEY_DOWN){
             square -> velocity = pointStruct(0, -unit_velocity);
-        }else if(downKey && !upKey){
+        }else if(KEY_DOWN && !KEY_UP){
             square -> velocity = pointStruct(0, unit_velocity);
         }else{
             square -> velocity = pointStruct(0, 0);
         }
     //if pushing all
-    }else if(upKey && downKey && rightKey && leftKey){
+    }else if(KEY_UP && KEY_DOWN && KEY_RIGHT && KEY_LEFT){
         square -> velocity = pointStruct(0, 0);
     }else{
         //if pushing any 2 non-opposite directions
-        if(upKey && rightKey){
+        if(KEY_UP && KEY_RIGHT){
             square -> velocity = pointStruct(unit_velocity, -unit_velocity);
-        }else if(rightKey && downKey){
+        }else if(KEY_RIGHT && KEY_DOWN){
             square -> velocity = pointStruct(unit_velocity, unit_velocity);
-        }else if(downKey && leftKey){
+        }else if(KEY_DOWN && KEY_LEFT){
             square -> velocity = pointStruct(-unit_velocity, unit_velocity);
-        }else if(leftKey && upKey){
+        }else if(KEY_LEFT && KEY_UP){
             square -> velocity = pointStruct(-unit_velocity, -unit_velocity);
         //if pushing any 1 direction
-        }else if(upKey){
+        }else if(KEY_UP){
             square -> velocity = pointStruct(0, -unit_velocity);
-        }else if(rightKey){
+        }else if(KEY_RIGHT){
             square -> velocity = pointStruct(unit_velocity, 0);
-        }else if(downKey){
+        }else if(KEY_DOWN){
             square -> velocity = pointStruct(0, unit_velocity);
-        }else if(leftKey){
+        }else if(KEY_LEFT){
             square -> velocity = pointStruct(-unit_velocity, 0);
         }
     }
@@ -123,10 +132,10 @@ void moveSquareNoAcc(Square* square, bool upKey, bool downKey, bool rightKey, bo
 }
 
 //update square properties on gameloop
-void updateSquare(Square* square, bool upKey, bool downKey, bool rightKey, bool leftKey){
+void updateSquare(Square* square){
 
     //move square, check for collisions, 
-    moveSquareNoAcc(square, upKey, downKey, rightKey, leftKey);
+    moveSquareNoAcc(square);
 
 }
 

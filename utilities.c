@@ -1,11 +1,17 @@
-#include <utilities.h>
+#include "utilities.h"
 
 //'constructor' function for point structs
-point* pointStruct(int x1, int y1){
-    point* newPoint;
-    newPoint -> x = x1;
-    newPoint -> y = y1;
+point* pointStruct(int x1, int y1) {
+    point* newPoint = malloc(sizeof(point)); // Allocate memory
+    if (newPoint != NULL) { // Check if memory allocation was successful
+        newPoint->x = x1;
+        newPoint->y = y1;
+    }
     return newPoint;
+}
+
+void freePoint(point* p) {
+    free(p);
 }
 
 //add 2 points together
@@ -16,13 +22,15 @@ point* addPoints(point* point1, point* point2){
 
 //'constructor' function for square hitbox structs
 //only for odd valued sideLength
-squareHitbox* centreSquareHitboxStruct(point* centre, int sideLength){
-    squareHitbox* hitbox;
-    hitbox -> centre = centre;
-    point* topLeft = pointStruct(centre -> x - (sideLength - 1) / 2, centre -> y - (sideLength - 1) / 2);
-    point* bottomRight = pointStruct(centre -> x + (sideLength - 1) / 2, centre -> y + (sideLength - 1) / 2);
-    hitbox -> topLeftPoint = topLeft;
-    hitbox -> bottomRightPoint = bottomRight;
+squareHitbox* centreSquareHitboxStruct(point* centre, int sideLength) {
+    squareHitbox* hitbox = malloc(sizeof(squareHitbox)); // Allocate memory
+    if (hitbox != NULL) { // Check if memory allocation was successful
+        hitbox->centre = centre;
+        point* topLeft = pointStruct(centre->x - (sideLength - 1) / 2, centre->y - (sideLength - 1) / 2);
+        point* bottomRight = pointStruct(centre->x + (sideLength - 1) / 2, centre->y + (sideLength - 1) / 2);
+        hitbox->topLeftPoint = topLeft;
+        hitbox->bottomRightPoint = bottomRight;
+    }
     return hitbox;
 }
 

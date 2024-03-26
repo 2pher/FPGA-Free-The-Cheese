@@ -1,9 +1,9 @@
 #include "globalHeader.h"
+#include "interrupts.h"
 
 /* Function prototypes */
 void main(void);
 void interrupt_handler(void);
-void PS2_ISR(void);
 
 /* The assembly language code below handles CPU reset processing */
 void the_reset (void) __attribute__ ((section (".reset")));

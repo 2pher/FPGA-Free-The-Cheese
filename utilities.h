@@ -15,6 +15,7 @@ typedef struct point {
 
 //'constructor' function for point struct
 point* pointStruct(int x, int y);
+void freePoint(point* p);
 
 //add two points together
 point* addPoints(point* point1, point* point2);

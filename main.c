@@ -1,7 +1,9 @@
 #include "globalHeader.h"
+#include "interrupts.h"
 #include "draw.h"
 #include "death_counter.h"
 #include "images.h"
+#include "shapes.h"
 
 /* Declare global variables */
 extern volatile int pixel_buffer_start;
@@ -11,10 +13,6 @@ extern int DEATH_COUNT;
 int OLD_COUNT;
 
 /* Function prototypes */
-void enableGlobalInterrupts(void);
-void configPS2(void);
-void display_HEX(char, char, char);
-void update_LED(void);
 void drawDeathCounter(void);
 void updateDeathCounter(void);
 void updateCount(int, int);
@@ -53,31 +51,44 @@ int main(void) {
 
     *(pixel_ctrl_ptr + 1) = (int) &buffer2;     // "Carve" space in back buffer
     pixel_buffer_start = *(pixel_ctrl_ptr + 1); // We draw on back buffer
-    clear_screen(); /* NOT SURE IF NEEDED; PLAY AROUND */
+    clear_screen();
 
     for (int x = 0; x < 320; x++) {
         for (int y = 0; y < 240; y++) {
             xy_plot_pixel(x, y, BACKGROUND[y][x]);
         }
     }
-    wait_for_vsync();
 
     drawDeathCounter();
     updateCount(0, 1);
     wait_for_vsync();
+    pixel_buffer_start = *(pixel_ctrl_ptr + 1);
 
+    for (int x = 0; x < 320; x++) {
+        for (int y = 0; y < 240; y++) {
+            xy_plot_pixel(x, y, BACKGROUND[y][x]);
+        }
+    }
 
-    //point* initialLocation = pointStruct(50, 50);
-    //Square* newSquare = squareStruct(initialLocation, 11);
+    drawDeathCounter();
+    updateCount(0, 1);
+    
+    point* initialLocation = pointStruct(50, 50);
+    Square* newSquare = squareStruct(initialLocation, 11);
+
 
     while(true){
-        //draw_player_square(newSquare);
-        //moveSquare(newSquare, 0, 0, 1, 0);
+        draw_player_square(newSquare);
+        moveSquareNoAcc(newSquare);
         display_HEX(byte1, byte2, byte3);
         update_LED();
         //updateDeathCounter();
+        wait_for_vsync();
+        pixel_buffer_start = *(pixel_ctrl_ptr + 1);
     }
-    
+ 
+    freePoint(initialLocation);
+    freeSquare(newSquare);
 }
 
 void drawDeathCounter() {

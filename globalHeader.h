@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <math.h>
+#include <string.h>
 
 #define BOARD "DE1-SoC"
 
