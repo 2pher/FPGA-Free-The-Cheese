@@ -18,8 +18,8 @@ void updateDeathCounter(void);
 void updateCount(int, int);
 
 /* Variables for initializtion*/
-uint16_t buffer1[240][512]; // Store into front buffer
-uint16_t buffer2[240][512]; // Store into back buffer
+short int buffer1[240][512]; // Store into front buffer
+short int buffer2[240][512]; // Store into back buffer
 
 /*******************************************************************************
  * Main program of Free Da Cheese
@@ -47,13 +47,26 @@ int main(void) {
     wait_for_vsync();                           // Swap back <-> front buffer
 
     pixel_buffer_start = *pixel_ctrl_ptr;
-    clear_screen();
+    for (int x = 0; x < 320; x++) {
+        for (int y = 0; y < 240; y++) {
+            xy_plot_pixel(x, y, BACKGROUND[y][x]);
+        }
+    }
+    drawDeathCounter();
+    updateCount(0, 1);
 
     *(pixel_ctrl_ptr + 1) = (int) &buffer2;     // "Carve" space in back buffer
     pixel_buffer_start = *(pixel_ctrl_ptr + 1); // We draw on back buffer
-    clear_screen();
 
     for (int x = 0; x < 320; x++) {
+        for (int y = 0; y < 240; y++) {
+            xy_plot_pixel(x, y, BACKGROUND[y][x]);
+        }
+    }
+    drawDeathCounter();
+    updateCount(0, 1);
+
+    /* for (int x = 0; x < 320; x++) {
         for (int y = 0; y < 240; y++) {
             xy_plot_pixel(x, y, BACKGROUND[y][x]);
         }
@@ -71,13 +84,13 @@ int main(void) {
     }
 
     drawDeathCounter();
-    updateCount(0, 1);
+    updateCount(0, 1); */
     
     point* initialLocation = pointStruct(50, 50);
     Square* newSquare = squareStruct(initialLocation, 11);
 
 
-    while(true){
+    while (1) {
         draw_player_square(newSquare);
         moveSquareNoAcc(newSquare);
         display_HEX(byte1, byte2, byte3);
@@ -95,7 +108,6 @@ void drawDeathCounter() {
     for (int i = 0; i < (sizeof(DEATH_COUNTER) / sizeof(DEATH_COUNTER[0])); i++) {
         xy_plot_pixel(DEATH_COUNTER[i].x, DEATH_COUNTER[i].y, 0xFFFF);
     }
-    wait_for_vsync();
 }
 
 void updateDeathCounter() {
@@ -111,7 +123,6 @@ void updateDeathCounter() {
             xy_plot_pixel(x + 146, y + 7, BACKGROUND[y+7][x+146]);
         }
     }
-    wait_for_vsync(); // SEE WITH LAB 7 CODE IF WE NEED THIS!
 
     if (DEATH_COUNT >= 10) {
         // We need to initialize counter for two digits
@@ -121,7 +132,6 @@ void updateDeathCounter() {
         // Do first one only
         updateCount(DEATH_COUNT, 1);
     }
-    wait_for_vsync();
 }
 
 void updateCount(int num, int digit) {
