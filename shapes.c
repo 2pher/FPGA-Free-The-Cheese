@@ -126,6 +126,8 @@ void moveSquareNoAcc(Square* square){
             square -> velocity = pointStruct(0, unit_velocity);
         }else if(KEY_LEFT){
             square -> velocity = pointStruct(-unit_velocity, 0);
+        }else {
+            square -> velocity = pointStruct(0, 0);
         }
     }
     square -> position = addPoints(square -> position, square -> velocity);
