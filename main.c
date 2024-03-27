@@ -1,6 +1,8 @@
 #include "background.h"
 #include "death_counter.h"
 #include "draw.h"
+#include "levels.h"
+#include "title_screen.h"
 #include "globalHeader.h"
 #include "interrupts.h"
 #include "shapes.h"
@@ -106,30 +108,29 @@ void configVGA() {
 
   pixel_buffer_start = *pixel_ctrl_ptr;
   drawTitleScreen();
-  drawDeathCounter();
-  updateCount(0, 1);
 
   *(pixel_ctrl_ptr + 1) = (int)&buffer2;       // "Carve" space in back buffer
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // We draw on back buffer
 
   drawTitleScreen();
-  drawDeathCounter();
-  updateCount(0, 1);
+  wait_for_vsync();
 }
 
 void updateTitleScreen() {
   volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
 
-  // Draw mouse 1, wait for 2 seconds
+  // Erase mouse 3, draw mouse 1, wait for 2 seconds
+  pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+  drawMouse(2, false);
   drawMouse(1, true);
   wait_for_vsync();
   int counter = 0;
   while (counter != 100000000) {
     counter++;
   }
-
+  
   // Erase mouse 1, draw mouse 2, wait for 0.1 seconds
-  pixel_buffer_start = *pixel_ctrl_ptr;
+  pixel_buffer_start = *(pixel_ctrl_ptr + 1);
   drawMouse(1, false);
   drawMouse(2, true);
   wait_for_vsync();
@@ -139,7 +140,7 @@ void updateTitleScreen() {
   }
 
   // Erase mouse 2, draw mouse 3, wait for 2 seconds
-  pixel_buffer_start = *pixel_ctrl_ptr;
+  pixel_buffer_start = *(pixel_ctrl_ptr + 1);
   drawMouse(2, false);
   drawMouse(3, true);
   wait_for_vsync();
@@ -149,7 +150,14 @@ void updateTitleScreen() {
   }
 
   // Erase mouse 3
+  pixel_buffer_start = *(pixel_ctrl_ptr + 1);
   drawMouse(3, false);
+  drawMouse(2, true);
+  wait_for_vsync();
+  counter = 0;
+  while (counter != 5000000) {
+    counter++;
+  }
 }
 
 void resetBackground() {

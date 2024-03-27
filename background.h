@@ -1,9 +1,8 @@
-#ifndef IMAGES_H
-#define IMAGES_H
+#ifndef BACKGROUND_H
+#define BACKGROUND_H
 
 #include <math.h>
 #include <stdbool.h>
-#include <stdint.h>
 #include <stdlib.h>
 
 static short int BACKGROUND[240][320] = {

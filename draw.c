@@ -5,14 +5,14 @@ extern volatile int pixel_buffer_start;
 // plot 1 pixel given xy and colour
 void xy_plot_pixel(int x, int y, short int line_color) {
   volatile short int *one_pixel_address;
-  one_pixel_address = pixel_buffer_start + (y << 10) + (x << 1);
+  one_pixel_address = (pixel_buffer_start + (y << 10) + (x << 1));
   *one_pixel_address = line_color;
 }
 // plot 1 pixel given location and colour
 void point_plot_pixel(point *location, short int line_color) {
   volatile short int *one_pixel_address;
   one_pixel_address =
-      pixel_buffer_start + (location->y << 10) + (location->x << 1);
+      (pixel_buffer_start + (location->y << 10) + (location->x << 1));
   *one_pixel_address = line_color;
 }
 
@@ -39,7 +39,7 @@ void drawMouse(int mouse, bool draw) {
         xy_plot_pixel(MOUSE1[i].x, MOUSE1[i].y, MOUSE1[i].color);
       else
         xy_plot_pixel(MOUSE1[i].x, MOUSE1[i].y,
-                      BACKGROUND[MOUSE1[i].y][MOUSE1[i].x]);
+                      TITLE_SCREEN[MOUSE1[i].y][MOUSE1[i].x]);
     }
   } else if (mouse == 2) {
     for (int i = 0; i < (sizeof(MOUSE2) / sizeof(MOUSE2[0])); i++) {
@@ -47,7 +47,7 @@ void drawMouse(int mouse, bool draw) {
         xy_plot_pixel(MOUSE2[i].x, MOUSE2[i].y, MOUSE2[i].color);
       else
         xy_plot_pixel(MOUSE2[i].x, MOUSE2[i].y,
-                      BACKGROUND[MOUSE2[i].y][MOUSE2[i].x]);
+                      TITLE_SCREEN[MOUSE2[i].y][MOUSE2[i].x]);
     }
   } else {
     for (int i = 0; i < (sizeof(MOUSE3) / sizeof(MOUSE3[0])); i++) {
@@ -55,7 +55,7 @@ void drawMouse(int mouse, bool draw) {
         xy_plot_pixel(MOUSE3[i].x, MOUSE3[i].y, MOUSE3[i].color);
       else
         xy_plot_pixel(MOUSE3[i].x, MOUSE3[i].y,
-                      BACKGROUND[MOUSE3[i].y][MOUSE3[i].x]);
+                      TITLE_SCREEN[MOUSE3[i].y][MOUSE3[i].x]);
     }
   }
 }
