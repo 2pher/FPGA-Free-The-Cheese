@@ -25,7 +25,7 @@ void updateCount(int, int);
 void configLevel1(void);
 
 /*******************************************************************************
- * Main program of Free Da Cheese
+ *  FREE THE CHEESE : MAIN PROGRAM
  ******************************************************************************/
 int main(void) {
   volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
@@ -47,21 +47,35 @@ int main(void) {
   DEATH_COUNT = 0;         // Initialize user death count
   OLD_COUNT = 0;           // Old death count to compare to current
 
-  /* TITLE SCREEN */
+  /*******************************************************************************
+   *  TITLE SCREEN
+   ******************************************************************************/
   while (ON_TITLE_SCREEN) {
     // Animate the mouse until user presses enter
     updateTitleScreen();
   }
 
-  /* LEVEL 1 */
-  configLevel1();  // Print new background and level
+  /*******************************************************************************
+   *  LEVEL 1
+   ******************************************************************************/
+  configLevel1();  // Print new background and level on both buffer frames
 
   // Initialize starting square
   point* initialLocation = pointStruct(50, 50);
   Square* newSquare = squareStruct(initialLocation, 9);
+  Square* oldSquare;
+  oldSquare->position = newSquare->position;
 
   // Level 1 main loop
   while (1) {
+    // Draw over old square position--MOVE INTO SUBROUTINE
+    /*     for (int i = 0; i < 9; i++) {
+          for (int j = 0; j < 9; j++) {
+            xy_plot_pixel(oldSquare->position->x + i, oldSquare->position->y +
+       j, 0xD6BA);
+          }
+        } */
+
     draw_player_square(newSquare);
     moveSquareNoAcc(newSquare);
     display_HEX(byte1, byte2, byte3);
@@ -69,13 +83,18 @@ int main(void) {
     // updateDeathCounter();
     wait_for_vsync();
     pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+
+    // Update oldSquare position
+    oldSquare->position = newSquare->position;
   }
 
   // End of level 1; deallocate all pointers
   freePoint(initialLocation);
   freeSquare(newSquare);
 
-  /* LEVEL 2 */
+  /*******************************************************************************
+   *  LEVEL 2
+   ******************************************************************************/
 }
 
 void configVGA() {
