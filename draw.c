@@ -60,6 +60,13 @@ void drawMouse(int mouse, bool draw) {
   }
 }
 
+void drawLevel1() {
+  int array_size = sizeof(LEVEL1) / sizeof(LEVEL1[0]);
+  for (int i = 0; i < array_size; i++) {
+    xy_plot_pixel(LEVEL1[i].x, LEVEL1[i].y, LEVEL1[i].color);
+  }
+}
+
 // clear screen
 void clear_screen() {
   for (int x = 0; x < 320; x++) {

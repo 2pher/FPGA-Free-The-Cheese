@@ -9,7 +9,7 @@
 extern volatile int pixel_buffer_start;
 extern volatile char byte1, byte2, byte3;
 extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT;
-extern bool TITLE_SCREEN;
+extern bool ON_TITLE_SCREEN;
 extern short int buffer1[240][512];  // Store into front buffer
 extern short int buffer2[240][512];  // Store into back buffer
 extern int DEATH_COUNT;
@@ -17,9 +17,12 @@ int OLD_COUNT;
 
 /* Function prototypes */
 void configVGA(void);
+void updateTitleScreen(void);
+void resetBackground(void);
 void drawDeathCounter(void);
 void updateDeathCounter(void);
 void updateCount(int, int);
+void configLevel1(void);
 
 /*******************************************************************************
  * Main program of Free Da Cheese
@@ -28,59 +31,36 @@ int main(void) {
   volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
 
   // Enable interrupts device-wide and board-wide
-  configPS2();
-  configVGA();
-  enableGlobalInterrupts();
+  configPS2();               // Enable PS2 interrupts
+  configVGA();               // Enable double buffering, draw title screen
+  enableGlobalInterrupts();  // Enable global interrupts for DE1-SoC board
 
   // Initialize global variables
-  byte1 = 0;
-  byte2 = 0;
-  byte3 = 0;
-  KEY_UP = false;
-  KEY_DOWN = false;
-  KEY_LEFT = false;
-  KEY_RIGHT = false;
-  DEATH_COUNT = 0;
-  OLD_COUNT = 0;
+  byte1 = 0;               // PS2 keyboard 3rd-newest byte
+  byte2 = 0;               // PS2 keyboard 2nd-newest byte
+  byte3 = 0;               // PS2 keyboard newest byte
+  KEY_UP = false;          // Global variable for moving up
+  KEY_DOWN = false;        // Global variable for moving down
+  KEY_LEFT = false;        // Global variable for moving right
+  KEY_RIGHT = false;       // Global variable for moving left
+  ON_TITLE_SCREEN = true;  // Global variable that stays true until <SPACE>
+  DEATH_COUNT = 0;         // Initialize user death count
+  OLD_COUNT = 0;           // Old death count to compare to current
 
-  while (TITLE_SCREEN) {
-    drawMouse(1, true);
-    int counter = 0;
-    while (counter != 100000000) {
-      counter++;
-    }
-    wait_for_vsync();
-    pixel_buffer_start = *pixel_ctrl_ptr;
-    drawMouse(1, false);
-    drawMouse(2, true);
-    counter = 0;
-    while (counter != 25000000) {
-      counter++;
-    }
-    wait_for_vsync();
-    pixel_buffer_start = *pixel_ctrl_ptr;
-    drawMouse(2, false);
-    drawMouse(3, true);
-    counter = 0;
-    while (counter != 100000000) {
-      counter++;
-    }
-    drawMouse(3, false);
+  /* TITLE SCREEN */
+  while (ON_TITLE_SCREEN) {
+    // Animate the mouse until user presses enter
+    updateTitleScreen();
   }
 
-  drawBackground();
-  drawDeathCounter();
-  updateCount(0, 1);
-  wait_for_vsync();
-  pixel_buffer_start = *pixel_ctrl_ptr;
-  drawBackground();
-  drawDeathCounter();
-  updateCount(0, 1);
+  /* LEVEL 1 */
+  configLevel1();  // Print new background and level
 
   // Initialize starting square
   point* initialLocation = pointStruct(50, 50);
-  Square* newSquare = squareStruct(initialLocation, 11);
+  Square* newSquare = squareStruct(initialLocation, 9);
 
+  // Level 1 main loop
   while (1) {
     draw_player_square(newSquare);
     moveSquareNoAcc(newSquare);
@@ -91,8 +71,11 @@ int main(void) {
     pixel_buffer_start = *(pixel_ctrl_ptr + 1);
   }
 
+  // End of level 1; deallocate all pointers
   freePoint(initialLocation);
   freeSquare(newSquare);
+
+  /* LEVEL 2 */
 }
 
 void configVGA() {
@@ -103,13 +86,64 @@ void configVGA() {
   wait_for_vsync();                       // Swap back <-> front buffer
 
   pixel_buffer_start = *pixel_ctrl_ptr;
-  drawBackground();
+  drawTitleScreen();
   drawDeathCounter();
   updateCount(0, 1);
 
   *(pixel_ctrl_ptr + 1) = (int)&buffer2;       // "Carve" space in back buffer
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // We draw on back buffer
 
+  drawTitleScreen();
+  drawDeathCounter();
+  updateCount(0, 1);
+}
+
+void updateTitleScreen() {
+  volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
+
+  // Draw mouse 1, wait for 2 seconds
+  drawMouse(1, true);
+  wait_for_vsync();
+  int counter = 0;
+  while (counter != 100000000) {
+    counter++;
+  }
+
+  // Erase mouse 1, draw mouse 2, wait for 0.1 seconds
+  pixel_buffer_start = *pixel_ctrl_ptr;
+  drawMouse(1, false);
+  drawMouse(2, true);
+  wait_for_vsync();
+  counter = 0;
+  while (counter != 5000000) {
+    counter++;
+  }
+
+  // Erase mouse 2, draw mouse 3, wait for 2 seconds
+  pixel_buffer_start = *pixel_ctrl_ptr;
+  drawMouse(2, false);
+  drawMouse(3, true);
+  wait_for_vsync();
+  counter = 0;
+  while (counter != 100000000) {
+    counter++;
+  }
+
+  // Erase mouse 3
+  drawMouse(3, false);
+}
+
+void resetBackground() {
+  volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
+
+  // Draw background on back buffer
+  drawBackground();
+  drawDeathCounter();
+  updateCount(0, 1);
+  wait_for_vsync();                            // Send to front
+  pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // Get new back buffer pointer
+
+  // Draw background on back buffer again to "reset" both frames
   drawBackground();
   drawDeathCounter();
   updateCount(0, 1);
@@ -218,4 +252,22 @@ void updateCount(int num, int digit) {
         xy_plot_pixel(NUM_9[i].x + 158, NUM_9[i].y + 7, 0xFFFF);
     }
   }
+}
+
+void configLevel1() {
+  volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
+
+  // Draw background & level on back buffer
+  drawBackground();
+  drawLevel1();
+  drawDeathCounter();
+  updateCount(0, 1);
+  wait_for_vsync();                            // Send to front
+  pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // Get new back buffer pointer
+
+  // Draw background on back buffer again to "reset" both frames
+  drawBackground();
+  drawLevel1();
+  drawDeathCounter();
+  updateCount(0, 1);
 }

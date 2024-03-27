@@ -3,6 +3,7 @@
 
 #include "background.h"
 #include "globalHeader.h"
+#include "levels.h"
 #include "shapes.h"
 #include "title_screen.h"
 #include "utilities.h"
@@ -14,6 +15,8 @@ void point_plot_pixel(point* location, short int line_color);
 void drawTitleScreen();
 void drawBackground();
 void drawMouse(int mouse, bool draw);
+
+void drawLevel1();
 
 // clear screen
 void clear_screen();
