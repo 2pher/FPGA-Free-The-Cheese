@@ -9,12 +9,14 @@
 extern volatile int pixel_buffer_start;
 extern volatile char byte1, byte2, byte3;
 extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT;
+extern bool TITLE_SCREEN;
 extern short int buffer1[240][512];  // Store into front buffer
 extern short int buffer2[240][512];  // Store into back buffer
 extern int DEATH_COUNT;
 int OLD_COUNT;
 
 /* Function prototypes */
+void configVGA(void);
 void drawDeathCounter(void);
 void updateDeathCounter(void);
 void updateCount(int, int);
@@ -27,6 +29,7 @@ int main(void) {
 
   // Enable interrupts device-wide and board-wide
   configPS2();
+  configVGA();
   enableGlobalInterrupts();
 
   // Initialize global variables
@@ -40,30 +43,41 @@ int main(void) {
   DEATH_COUNT = 0;
   OLD_COUNT = 0;
 
-  // Initialize VGA
-  *(pixel_ctrl_ptr + 1) = (int)&buffer1;  // Initialize memory in back buffer
-  wait_for_vsync();                       // Swap back <-> front buffer
+  while (TITLE_SCREEN) {
+    drawMouse(1, true);
+    int counter = 0;
+    while (counter != 100000000) {
+      counter++;
+    }
+    wait_for_vsync();
+    pixel_buffer_start = *pixel_ctrl_ptr;
+    drawMouse(1, false);
+    drawMouse(2, true);
+    counter = 0;
+    while (counter != 25000000) {
+      counter++;
+    }
+    wait_for_vsync();
+    pixel_buffer_start = *pixel_ctrl_ptr;
+    drawMouse(2, false);
+    drawMouse(3, true);
+    counter = 0;
+    while (counter != 100000000) {
+      counter++;
+    }
+    drawMouse(3, false);
+  }
 
+  drawBackground();
+  drawDeathCounter();
+  updateCount(0, 1);
+  wait_for_vsync();
   pixel_buffer_start = *pixel_ctrl_ptr;
-  for (int x = 0; x < 320; x++) {
-    for (int y = 0; y < 240; y++) {
-      xy_plot_pixel(x, y, BACKGROUND[y][x]);
-    }
-  }
+  drawBackground();
   drawDeathCounter();
   updateCount(0, 1);
 
-  *(pixel_ctrl_ptr + 1) = (int)&buffer2;       // "Carve" space in back buffer
-  pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // We draw on back buffer
-
-  for (int x = 0; x < 320; x++) {
-    for (int y = 0; y < 240; y++) {
-      xy_plot_pixel(x, y, BACKGROUND[y][x]);
-    }
-  }
-  drawDeathCounter();
-  updateCount(0, 1);
-
+  // Initialize starting square
   point* initialLocation = pointStruct(50, 50);
   Square* newSquare = squareStruct(initialLocation, 11);
 
@@ -79,6 +93,26 @@ int main(void) {
 
   freePoint(initialLocation);
   freeSquare(newSquare);
+}
+
+void configVGA() {
+  volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
+
+  // Initialize VGA
+  *(pixel_ctrl_ptr + 1) = (int)&buffer1;  // Initialize memory in back buffer
+  wait_for_vsync();                       // Swap back <-> front buffer
+
+  pixel_buffer_start = *pixel_ctrl_ptr;
+  drawBackground();
+  drawDeathCounter();
+  updateCount(0, 1);
+
+  *(pixel_ctrl_ptr + 1) = (int)&buffer2;       // "Carve" space in back buffer
+  pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // We draw on back buffer
+
+  drawBackground();
+  drawDeathCounter();
+  updateCount(0, 1);
 }
 
 void drawDeathCounter() {

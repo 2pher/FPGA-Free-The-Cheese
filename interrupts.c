@@ -5,6 +5,7 @@
 /* Declare global variables */
 extern volatile char byte1, byte2, byte3;
 extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT;
+extern bool TITLE_SCREEN;
 extern int DEATH_COUNT;  // TO BE REMOVED
 
 /*******************************************************************************
@@ -48,6 +49,10 @@ void PS2_ISR(void) {
     // Check if the keyboard is unpressed
     // byte2 will equal 0xF0!
     if (byte2 == (char)0xF0) break_code = true;
+
+    if (TITLE_SCREEN && break_code && byte3 == (char)0x29) {
+      TITLE_SCREEN = false;
+    }
 
     // Update globals.c vars accordingly
     if (byte3 == (char)0x1D) {

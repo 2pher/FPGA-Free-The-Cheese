@@ -6,6 +6,14 @@
 #include <stdlib.h>
 
 // represents a pixel location on screen
+
+typedef struct image {
+  int x;
+  int y;
+  short int color;
+
+} image;
+
 typedef struct point {
   int x;
   int y;

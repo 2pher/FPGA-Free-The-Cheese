@@ -1,5 +1,18 @@
 #include "utilities.h"
 
+// 'Constructor' for images
+image* imageStruct(int x1, int y1, short int color1) {
+  image* newImage = malloc(sizeof(image));
+  if (newImage != NULL) {
+    newImage->x = x1;
+    newImage->y = y1;
+    newImage->color = color1;
+  }
+  return newImage;
+}
+
+void freeImage(image* i) { free(i); }
+
 //'constructor' function for point structs
 point* pointStruct(int x1, int y1) {
   point* newPoint = malloc(sizeof(point));  // Allocate memory

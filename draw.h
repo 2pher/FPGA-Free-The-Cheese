@@ -1,15 +1,19 @@
 #ifndef DRAW_H
 #define DRAW_H
 
+#include "background.h"
 #include "globalHeader.h"
 #include "shapes.h"
+#include "title_screen.h"
 #include "utilities.h"
 
 // plot 1 pixel given location and colour
 void xy_plot_pixel(int x, int y, short int line_color);
 void point_plot_pixel(point* location, short int line_color);
 
-void print_background();
+void drawTitleScreen();
+void drawBackground();
+void drawMouse(int mouse, bool draw);
 
 // clear screen
 void clear_screen();

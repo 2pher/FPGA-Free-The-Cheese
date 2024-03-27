@@ -16,6 +16,50 @@ void point_plot_pixel(point *location, short int line_color) {
   *one_pixel_address = line_color;
 }
 
+void drawTitleScreen(void) {
+  for (int x = 0; x < 320; x++) {
+    for (int y = 0; y < 240; y++) {
+      xy_plot_pixel(x, y, TITLE_SCREEN[y][x]);
+    }
+  }
+}
+
+void drawBackground(void) {
+  for (int x = 0; x < 320; x++) {
+    for (int y = 0; y < 240; y++) {
+      xy_plot_pixel(x, y, BACKGROUND[y][x]);
+    }
+  }
+}
+
+void drawMouse(int mouse, bool draw) {
+  if (mouse == 1) {
+    for (int i = 0; i < (sizeof(MOUSE1) / sizeof(MOUSE1[0])); i++) {
+      if (draw)
+        xy_plot_pixel(MOUSE1[i].x, MOUSE1[i].y, MOUSE1[i].color);
+      else
+        xy_plot_pixel(MOUSE1[i].x, MOUSE1[i].y,
+                      BACKGROUND[MOUSE1[i].y][MOUSE1[i].x]);
+    }
+  } else if (mouse == 2) {
+    for (int i = 0; i < (sizeof(MOUSE2) / sizeof(MOUSE2[0])); i++) {
+      if (draw)
+        xy_plot_pixel(MOUSE2[i].x, MOUSE2[i].y, MOUSE2[i].color);
+      else
+        xy_plot_pixel(MOUSE2[i].x, MOUSE2[i].y,
+                      BACKGROUND[MOUSE2[i].y][MOUSE2[i].x]);
+    }
+  } else {
+    for (int i = 0; i < (sizeof(MOUSE3) / sizeof(MOUSE3[0])); i++) {
+      if (draw)
+        xy_plot_pixel(MOUSE3[i].x, MOUSE3[i].y, MOUSE3[i].color);
+      else
+        xy_plot_pixel(MOUSE3[i].x, MOUSE3[i].y,
+                      BACKGROUND[MOUSE3[i].y][MOUSE3[i].x]);
+    }
+  }
+}
+
 // clear screen
 void clear_screen() {
   for (int x = 0; x < 320; x++) {
