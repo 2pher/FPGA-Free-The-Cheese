@@ -1,4 +1,3 @@
-#include "background.h"
 #include "death_counter.h"
 #include "draw.h"
 #include "globalHeader.h"
@@ -20,7 +19,7 @@ int OLD_COUNT;
 /* Function prototypes */
 void configVGA(void);
 void updateTitleScreen(void);
-void resetBackground(void);
+// void resetBackground(void);
 void drawDeathCounter(void);
 void updateDeathCounter(void);
 void updateCount(int, int);
@@ -63,10 +62,12 @@ int main(void) {
   configLevel1();  // Print new background and level on both buffer frames
 
   // Initialize starting square; TEST OUT!
-  point* initialLocation = pointStruct(37, 124);
+  point* initialLocation = pointStruct(42, 115);
   Square* newSquare = squareStruct(initialLocation, 9);
-  Square* oldSquare;
-  oldSquare->position = newSquare->position;
+  point* oldSquare;
+  point* prevSquare;
+  prevSquare = newSquare->position;
+  oldSquare = newSquare->position;
 
   // Level 1 main loop
   while (1) {
@@ -74,16 +75,21 @@ int main(void) {
     moveSquareNoAcc(newSquare);
 
     // If player's old position == new position
-    if (oldSquare->position != newSquare->position) {
+    if (oldSquare->x != newSquare->position->x ||
+        oldSquare->y != newSquare->position->y) {
       // Erase the old position
-      erase_player_square(oldSquare, 1);
+      Square* deleteSquare = squareStruct(initialLocation, 9);
+      deleteSquare->position = oldSquare;
+      erase_player_square(deleteSquare, 1);
+      freeSquare(deleteSquare);
     }
 
     // Draw player's current position
     draw_player_square(newSquare);
 
     // Update oldSquare position
-    oldSquare->position = newSquare->position;
+    oldSquare = prevSquare;
+    prevSquare = newSquare->position;
 
     display_HEX(byte1, byte2, byte3);
     update_LED();
@@ -123,17 +129,17 @@ void updateTitleScreen() {
 
   // Erase mouse 3, draw mouse 1, wait for 2 seconds
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);
-  drawMouse(2, false);
+  drawMouse(3, false);
   drawMouse(1, true);
   wait_for_vsync();
   int counter = 0;
-  while (counter != 100000000) {
+  while (counter != 75000000) {
     counter++;
   }
 
   // Erase mouse 1, draw mouse 2, wait for 0.1 seconds
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);
-  drawMouse(1, false);
+  drawMouse(2, false);
   drawMouse(2, true);
   wait_for_vsync();
   counter = 0;
@@ -143,17 +149,17 @@ void updateTitleScreen() {
 
   // Erase mouse 2, draw mouse 3, wait for 2 seconds
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);
-  drawMouse(2, false);
+  drawMouse(1, false);
   drawMouse(3, true);
   wait_for_vsync();
   counter = 0;
-  while (counter != 100000000) {
+  while (counter != 75000000) {
     counter++;
   }
 
   // Erase mouse 3
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);
-  drawMouse(3, false);
+  drawMouse(2, false);
   drawMouse(2, true);
   wait_for_vsync();
   counter = 0;
@@ -162,7 +168,7 @@ void updateTitleScreen() {
   }
 }
 
-void resetBackground() {
+/* void resetBackground() {
   volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
 
   // Draw background on back buffer
@@ -176,7 +182,7 @@ void resetBackground() {
   drawBackground();
   drawDeathCounter();
   updateCount(0, 1);
-}
+} */
 
 void drawDeathCounter() {
   for (int i = 0; i < (sizeof(DEATH_COUNTER) / sizeof(DEATH_COUNTER[0])); i++) {
@@ -194,7 +200,7 @@ void updateDeathCounter() {
   for (int x = 0; x < 24; x++) {
     for (int y = 0; y < 20; y++) {
       // Fill it with whatever the background colour was
-      xy_plot_pixel(x + 146, y + 7, BACKGROUND[y + 7][x + 146]);
+      xy_plot_pixel(x + 146, y + 7, LEVEL1[y + 7][x + 146]);
     }
   }
 
@@ -287,7 +293,7 @@ void configLevel1() {
   volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
 
   // Draw background & level on back buffer
-  drawBackground();
+  pixel_buffer_start = *(pixel_ctrl_ptr + 1);
   drawLevel1();
   drawDeathCounter();
   updateCount(0, 1);
@@ -295,7 +301,6 @@ void configLevel1() {
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // Get new back buffer pointer
 
   // Draw background on back buffer again to "reset" both frames
-  drawBackground();
   drawLevel1();
   drawDeathCounter();
   updateCount(0, 1);

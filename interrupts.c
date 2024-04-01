@@ -69,14 +69,14 @@ void PS2_ISR(void) {
       else
         KEY_LEFT = true;
 
-    } else if (byte3 == (char)0x1B) {
+    } else if (byte3 == (char)0x23) {
       // D key pressed
       if (break_code)
         KEY_RIGHT = false;
       else
         KEY_RIGHT = true;
 
-    } else if (byte3 == (char)0x23) {
+    } else if (byte3 == (char)0x1B) {
       // S key pressed
       if (break_code)
         KEY_DOWN = false;

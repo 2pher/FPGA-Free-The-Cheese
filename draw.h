@@ -1,7 +1,6 @@
 #ifndef DRAW_H
 #define DRAW_H
 
-#include "background.h"
 #include "globalHeader.h"
 #include "levels.h"
 #include "shapes.h"
@@ -13,7 +12,7 @@ void xy_plot_pixel(int x, int y, short int line_color);
 void point_plot_pixel(point* location, short int line_color);
 
 void drawTitleScreen();
-void drawBackground();
+//void drawBackground();
 void drawMouse(int mouse, bool draw);
 
 void drawLevel1();

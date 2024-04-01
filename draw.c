@@ -24,13 +24,13 @@ void drawTitleScreen(void) {
   }
 }
 
-void drawBackground(void) {
+/* void drawBackground(void) {
   for (int x = 0; x < 320; x++) {
     for (int y = 0; y < 240; y++) {
       xy_plot_pixel(x, y, BACKGROUND[y][x]);
     }
   }
-}
+} */
 
 void drawMouse(int mouse, bool draw) {
   if (mouse == 1) {
