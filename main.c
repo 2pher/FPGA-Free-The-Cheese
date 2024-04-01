@@ -1,11 +1,11 @@
 #include "background.h"
 #include "death_counter.h"
 #include "draw.h"
-#include "levels.h"
-#include "title_screen.h"
 #include "globalHeader.h"
 #include "interrupts.h"
+#include "levels.h"
 #include "shapes.h"
+#include "title_screen.h"
 
 /* Declare global variables */
 extern volatile int pixel_buffer_start;
@@ -62,32 +62,34 @@ int main(void) {
    ******************************************************************************/
   configLevel1();  // Print new background and level on both buffer frames
 
-  // Initialize starting square
-  point* initialLocation = pointStruct(50, 50);
+  // Initialize starting square; TEST OUT!
+  point* initialLocation = pointStruct(37, 124);
   Square* newSquare = squareStruct(initialLocation, 9);
   Square* oldSquare;
   oldSquare->position = newSquare->position;
 
   // Level 1 main loop
   while (1) {
-    // Draw over old square position--MOVE INTO SUBROUTINE
-    /*     for (int i = 0; i < 9; i++) {
-          for (int j = 0; j < 9; j++) {
-            xy_plot_pixel(oldSquare->position->x + i, oldSquare->position->y +
-       j, 0xD6BA);
-          }
-        } */
-
-    draw_player_square(newSquare);
+    // Calculate position
     moveSquareNoAcc(newSquare);
+
+    // If player's old position == new position
+    if (oldSquare->position != newSquare->position) {
+      // Erase the old position
+      erase_player_square(oldSquare, 1);
+    }
+
+    // Draw player's current position
+    draw_player_square(newSquare);
+
+    // Update oldSquare position
+    oldSquare->position = newSquare->position;
+
     display_HEX(byte1, byte2, byte3);
     update_LED();
     // updateDeathCounter();
     wait_for_vsync();
     pixel_buffer_start = *(pixel_ctrl_ptr + 1);
-
-    // Update oldSquare position
-    oldSquare->position = newSquare->position;
   }
 
   // End of level 1; deallocate all pointers
@@ -128,7 +130,7 @@ void updateTitleScreen() {
   while (counter != 100000000) {
     counter++;
   }
-  
+
   // Erase mouse 1, draw mouse 2, wait for 0.1 seconds
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);
   drawMouse(1, false);

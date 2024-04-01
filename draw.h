@@ -29,6 +29,7 @@ void draw_line(int x0, int y0, int x1, int y1, short int colour);
 
 // draw player square
 void draw_player_square(Square* square);
+void erase_player_square(Square* square, int level);
 
 // Vsync helper function
 void wait_for_vsync();

@@ -61,9 +61,10 @@ void drawMouse(int mouse, bool draw) {
 }
 
 void drawLevel1() {
-  int array_size = sizeof(LEVEL1) / sizeof(LEVEL1[0]);
-  for (int i = 0; i < array_size; i++) {
-    xy_plot_pixel(LEVEL1[i].x, LEVEL1[i].y, LEVEL1[i].color);
+  for (int x = 0; x < 320; x++) {
+    for (int y = 0; y < 240; y++) {
+      xy_plot_pixel(x, y, LEVEL1[y][x]);
+    }
   }
 }
 
@@ -129,6 +130,18 @@ void draw_player_square(Square *square) {
     for (int y = square->position->y - half_side_length;
          y <= square->position->y + half_side_length; y++) {
       xy_plot_pixel(x, y, 0xFF00);
+    }
+  }
+}
+
+// erase player square
+void erase_player_square(Square *square, int level) {
+  int half_side_length = (square->sideLength - 1) / 2;
+  for (int x = square->position->x - half_side_length;
+       x <= square->position->x + half_side_length; x++) {
+    for (int y = square->position->y - half_side_length;
+         y <= square->position->y + half_side_length; y++) {
+      if (level == 1) xy_plot_pixel(x, y, LEVEL1[y][x]);
     }
   }
 }
