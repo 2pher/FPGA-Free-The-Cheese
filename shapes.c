@@ -161,3 +161,39 @@ Circle* circleStruct(point* position, int radius, point** path) {
 
   return newCircle;
 }
+
+bool checkBoundaryLeft(Square* square) {
+  int half_side_length = ((square->sideLength - 1) / 2) + 1;
+  if (LEVEL1[square->position->y][square->position->x - half_side_length] ==
+      0x0000) {
+    return false;
+  }
+  return true;
+}
+
+bool checkBoundaryRight(Square* square) {
+  int half_side_length = ((square->sideLength - 1) / 2) + 1;
+  if (LEVEL1[square->position->y][square->position->x + half_side_length] ==
+      0x0000) {
+    return false;
+  }
+  return true;
+}
+
+bool checkBoundaryUp(Square* square) {
+  int half_side_length = ((square->sideLength - 1) / 2) + 1;
+  if (LEVEL1[square->position->y - half_side_length][square->position->x] ==
+      0x0000) {
+    return false;
+  }
+  return true;
+}
+
+bool checkBoundaryDown(Square* square) {
+  int half_side_length = ((square->sideLength - 1) / 2) + 1;
+  if (LEVEL1[square->position->y + half_side_length][square->position->x] ==
+      0x0000) {
+    return false;
+  }
+  return true;
+}

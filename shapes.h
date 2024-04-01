@@ -3,6 +3,7 @@
 
 #include "background.h"
 #include "globalHeader.h"
+#include "levels.h"
 #include "utilities.h"
 
 // player square struct
@@ -25,6 +26,11 @@ void freeSquare(Square* s);
 void moveSquare(Square* square);
 // no acceleration, only linear movement speed
 void moveSquareNoAcc(Square* square);
+
+bool checkBoundaryLeft(Square* square);
+bool checkBoundaryRight(Square* square);
+bool checkBoundaryUp(Square* square);
+bool checkBoundaryDown(Square* square);
 
 // update square properties on gameloop
 void updateSquare(Square* square);
