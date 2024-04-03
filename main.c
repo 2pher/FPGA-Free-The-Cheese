@@ -10,7 +10,7 @@
 extern volatile int pixel_buffer_start;
 extern volatile char byte1, byte2, byte3;
 extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT;
-extern bool ON_TITLE_SCREEN;
+extern bool ON_TITLE_SCREEN, ON_LEVEL1;
 extern short int buffer1[240][512];  // Store into front buffer
 extern short int buffer2[240][512];  // Store into back buffer
 extern int DEATH_COUNT;
@@ -24,6 +24,7 @@ void drawDeathCounter(void);
 void updateDeathCounter(void);
 void updateCount(int, int);
 void configLevel1(void);
+void checkWin(Square*, int);
 
 /*******************************************************************************
  *  FREE THE CHEESE : MAIN PROGRAM
@@ -47,6 +48,7 @@ int main(void) {
   ON_TITLE_SCREEN = true;  // Global variable that stays true until <SPACE>
   DEATH_COUNT = 0;         // Initialize user death count
   OLD_COUNT = 0;           // Old death count to compare to current
+  ON_LEVEL1 = true;
 
   /*******************************************************************************
    *  TITLE SCREEN
@@ -61,7 +63,7 @@ int main(void) {
    ******************************************************************************/
   configLevel1();  // Print new background and level on both buffer frames
 
-  // Initialize starting square; TEST OUT!
+  // Initialize starting square
   point* initialLocation = pointStruct(42, 115);
   Square* newSquare = squareStruct(initialLocation, 9);
   point* oldSquare;
@@ -69,21 +71,36 @@ int main(void) {
   prevSquare = newSquare->position;
   oldSquare = newSquare->position;
 
+  // Initialize all of the bots, create an array of them
+  Circle* e1 = circleStruct(pointStruct(76, 45), 3, pointStruct(0, 3), NULL);
+  Circle* e2 = circleStruct(pointSturct(140, 45), 3, pointStruct(0, 3), NULL);
+  Circle* e3 = circleStruct(pointStruct(204, 45), 3, pointStruct(0, 3), NULL);
+  Circle* e4 = circleStruct(pointStruct(108, 202), 3, pointStruct(0, -3), NULL);
+  Circle* e5 = circleStruct(pointStruct(172, 202), 3, pointStruct(0, -3), NULL);
+  Circle* e6 = circleStruct(pointStruct(236, 202), 3, pointStruct(0, -3), NULL);
+  Circle* enemies[] = {e1, e2, e3, e4, e5, e6};
+
+  point* oldEnemies[6];
+  point* prevEnemies[6];
+  for (int i = 0; i < 6; i++) {
+    prevEnemies[i] = enemies[i]->position;
+    oldEnemies[i] = enemies[i]->position;
+  }
+
   // Level 1 main loop
-  while (1) {
+  while (ON_LEVEL1) {
     // Calculate position
     moveSquareNoAcc(newSquare);
-
-    // If player's old position == new position
-    if (oldSquare->x != newSquare->position->x ||
-        oldSquare->y != newSquare->position->y) {
-      // Erase the old position
-      Square* deleteSquare = squareStruct(initialLocation, 9);
-      deleteSquare->position = oldSquare;
-      erase_player_square(deleteSquare, 1);
-      freeSquare(deleteSquare);
-    }
-
+    // Calculate position of each enemy
+    moveCircle(enemies);
+    // Check for any collisions
+    checkForCollisions(newSquare, enemies);
+    // Check if won
+    checkWin(newSquare, 1);
+    // Erase player square if necessary
+    erase_player_square(oldSquare, newSquare, 1);
+    // Erase old circle positions, draw new ones
+    drawCircle(enemies, oldEnemies, 1);
     // Draw player's current position
     draw_player_square(newSquare);
 
@@ -91,9 +108,18 @@ int main(void) {
     oldSquare = prevSquare;
     prevSquare = newSquare->position;
 
+    // Update circle positions
+    for (int i = 0; i < 6; i++) {
+      oldEnemies[i] = prevEnemies[i];
+      prevEnemies[i] = enemies[i]->position;
+    }
+
     display_HEX(byte1, byte2, byte3);
     update_LED();
-    // updateDeathCounter();
+
+    // Update death counter if necessary
+    updateDeathCounter();
+
     wait_for_vsync();
     pixel_buffer_start = *(pixel_ctrl_ptr + 1);
   }
@@ -143,9 +169,7 @@ void updateTitleScreen() {
   drawMouse(2, true);
   wait_for_vsync();
   counter = 0;
-  while (counter != 5000000) {
-    counter++;
-  }
+  while (counter != 5000000) counter++;
 
   // Erase mouse 2, draw mouse 3, wait for 2 seconds
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);
@@ -153,9 +177,7 @@ void updateTitleScreen() {
   drawMouse(3, true);
   wait_for_vsync();
   counter = 0;
-  while (counter != 75000000) {
-    counter++;
-  }
+  while (counter != 75000000) counter++;
 
   // Erase mouse 3
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);
@@ -163,9 +185,7 @@ void updateTitleScreen() {
   drawMouse(2, true);
   wait_for_vsync();
   counter = 0;
-  while (counter != 5000000) {
-    counter++;
-  }
+  while (counter != 5000000) counter++;
 }
 
 /* void resetBackground() {
@@ -212,6 +232,7 @@ void updateDeathCounter() {
     // Do first one only
     updateCount(DEATH_COUNT, 1);
   }
+  OLD_COUNT = DEATH_COUNT;
 }
 
 void updateCount(int num, int digit) {
@@ -304,4 +325,14 @@ void configLevel1() {
   drawLevel1();
   drawDeathCounter();
   updateCount(0, 1);
+}
+
+void checkWin(Square* newSquare, int level) {
+  if (level == 1) {
+    if (newSquare->position->x >= 270 && newSquare->position->y >= 112 &&
+        newSquare->position->y <= 136) {
+      // IN THE POSITION OF A WIN!!!
+      ON_LEVEL1 = false;
+    }
+  }
 }

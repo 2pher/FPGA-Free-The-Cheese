@@ -135,44 +135,57 @@ void draw_player_square(Square *square) {
 }
 
 // erase player square
-void erase_player_square(Square *square, int level) {
-  int half_side_length = (square->sideLength - 1) / 2;
-  for (int x = square->position->x - half_side_length;
-       x <= square->position->x + half_side_length; x++) {
-    for (int y = square->position->y - half_side_length;
-         y <= square->position->y + half_side_length; y++) {
+void erase_player_square(point *oldSquare, Square *newSquare, int level) {
+  if (oldSquare->x != newSquare->position->x ||
+      oldSquare->y != newSquare->position->y) {
+    Square *square = squareStruct(oldSquare, 9);
+    int half_side_length = (square->sideLength - 1) / 2;
+    for (int x = square->position->x - half_side_length;
+         x <= square->position->x + half_side_length; x++) {
+      for (int y = square->position->y - half_side_length;
+           y <= square->position->y + half_side_length; y++) {
+        if (level == 1) xy_plot_pixel(x, y, LEVEL1[y][x]);
+      }
+    }
+  }
+}
+
+// Draw all circles
+void drawCircles(Circle *circle[], Circle *oldCircle[], int level) {
+  int size = sizeof(circle) / sizeof(circle[0]);
+  for (int i = 0; i < size; i++) {
+    erase_circle(oldCircle[i], level);
+    draw_circle(circle[i]);
+  }
+}
+
+// draw circle obstacle
+void draw_circle(Circle *circle) {
+  int top = ceil(circle->position->y - circle->radius);
+  int bottom = floor(circle->position->y + circle->radius);
+
+  for (int y = top; y <= bottom; y++) {
+    int dy = y - circle->position->y;
+    float dx = sqrt(circle->radius * circle->radius - dy * dy);
+    int left = ceil(circle->position->x - dx);
+    int right = floor(circle->position->x + dx);
+    for (int x = left; x <= right; x++) {
+      xy_plot_pixel(x, y, 0xF800);
+    }
+  }
+}
+
+void erase_circle(Circle *circle, int level) {
+  int top = ceil(circle->position->y - circle->radius);
+  int bottom = floor(circle->position->y + circle->radius);
+
+  for (int y = top; y <= bottom; y++) {
+    int dy = y - circle->position->y;
+    float dx = sqrt(circle->radius * circle->radius - dy * dy);
+    int left = ceil(circle->position->x - dx);
+    int right = floor(circle->position->x + dx);
+    for (int x = left; x <= right; x++) {
       if (level == 1) xy_plot_pixel(x, y, LEVEL1[y][x]);
-    }
-  }
-}
-
-//draw circle obstacle
-void draw_circle(Circle* circle){
-  int top = ceil(circle -> position -> y - circle -> radius);
-  int bottom = floor(circle -> position -> y + circle -> radius);
-
-  for(int y = top; y <= bottom; y++) {
-    int dy = y - circle -> position -> y;
-    float dx = sqrt(circle -> radius * circle -> radius - dy*dy);
-    int left = ceil(circle -> position -> x - dx);
-    int right = floor(circle -> position -> x + dx);
-    for (int x = left; x <= right; x++) {
-      xy_plot_pixel(x, y, 0xFF00);
-    }
-  }
-}
-
-void erase_circle(Circle* circle, int level){
-  int top = ceil(circle -> position -> y - circle -> radius);
-  int bottom = floor(circle -> position -> y + circle -> radius);
-
-  for(int y = top; y <= bottom; y++) {
-    int dy = y - circle -> position -> y;
-    float dx = sqrt(circle -> radius * circle -> radius - dy*dy);
-    int left = ceil(circle -> position -> x - dx);
-    int right = floor(circle -> position -> x + dx);
-    for (int x = left; x <= right; x++) {
-      if(level == 1) xy_plot_pixel(x, y, LEVEL1[y][x]);
     }
   }
 }

@@ -12,7 +12,7 @@ void xy_plot_pixel(int x, int y, short int line_color);
 void point_plot_pixel(point* location, short int line_color);
 
 void drawTitleScreen();
-//void drawBackground();
+// void drawBackground();
 void drawMouse(int mouse, bool draw);
 
 void drawLevel1();
@@ -28,9 +28,10 @@ void draw_line(int x0, int y0, int x1, int y1, short int colour);
 
 // draw player square
 void draw_player_square(Square* square);
-void erase_player_square(Square* square, int level);
+void erase_player_square(point* oldSquare, Square* square, int level);
 
-//draw circle obstacle
+// draw circle obstacle
+void drawCircle(Circle* circle[], Circle* oldCircle[], int level);
 void draw_circle(Circle* circle);
 void erase_circle(Circle* circle, int level);
 

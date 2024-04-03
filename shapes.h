@@ -13,6 +13,7 @@ typedef struct Square {
   int sideLength;
   squareHitbox* hitbox;
   int hitboxSideLength;
+  point* respawn;
   bool isAlive;
 
 } Square;
@@ -48,6 +49,12 @@ typedef struct Circle {
 } Circle;
 
 // circle 'constructor'
-Circle* circleStruct(point* position, int radius, point** path);
+Circle* circleStruct(point* position, int radius, point* velocity,
+                     point** path);
+
+void moveCircle(Circle* circle[]);
+
+void checkForCollisions(Square* square, Circle* circle[]);
+bool collided(Square* square, Circle* circle);
 
 #endif
