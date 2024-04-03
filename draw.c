@@ -146,6 +146,37 @@ void erase_player_square(Square *square, int level) {
   }
 }
 
+//draw circle obstacle
+void draw_circle(Circle* circle){
+  int top = ceil(circle -> position -> y - circle -> radius);
+  int bottom = floor(circle -> position -> y + circle -> radius);
+
+  for(int y = top; y <= bottom; y++) {
+    int dy = y - circle -> position -> y;
+    float dx = sqrt(circle -> radius * circle -> radius - dy*dy);
+    int left = ceil(circle -> position -> x - dx);
+    int right = floor(circle -> position -> x + dx);
+    for (int x = left; x <= right; x++) {
+      xy_plot_pixel(x, y, 0xFF00);
+    }
+  }
+}
+
+void erase_circle(Circle* circle, int level){
+  int top = ceil(circle -> position -> y - circle -> radius);
+  int bottom = floor(circle -> position -> y + circle -> radius);
+
+  for(int y = top; y <= bottom; y++) {
+    int dy = y - circle -> position -> y;
+    float dx = sqrt(circle -> radius * circle -> radius - dy*dy);
+    int left = ceil(circle -> position -> x - dx);
+    int right = floor(circle -> position -> x + dx);
+    for (int x = left; x <= right; x++) {
+      if(level == 1) xy_plot_pixel(x, y, LEVEL1[y][x]);
+    }
+  }
+}
+
 // Wait for screen to finish drawing
 void wait_for_vsync() {
   volatile int *pixel_ctrl_ptr = (int *)PIXEL_BUF_CTRL_BASE;

@@ -30,6 +30,10 @@ void draw_line(int x0, int y0, int x1, int y1, short int colour);
 void draw_player_square(Square* square);
 void erase_player_square(Square* square, int level);
 
+//draw circle obstacle
+void draw_circle(Circle* circle);
+void erase_circle(Circle* circle, int level);
+
 // Vsync helper function
 void wait_for_vsync();
 
