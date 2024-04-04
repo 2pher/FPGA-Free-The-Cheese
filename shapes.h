@@ -41,7 +41,7 @@ typedef struct Circle {
   point* velocity;
   point* acceleration;
   int radius;
-  circleHitbox* hitbox;
+  squareHitbox* hitbox;
   int hitboxRadius;
   point** path;
   bool isVisible;
@@ -51,6 +51,7 @@ typedef struct Circle {
 // circle 'constructor'
 Circle* circleStruct(point* position, int radius, point* velocity,
                      point** path);
+void freeCircle(Circle* circle);
 
 void moveCircle(Circle* circle[]);
 

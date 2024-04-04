@@ -207,7 +207,7 @@ Circle* circleStruct(point* position, int radius, point* velocity,
   point* vel = velocity;
   point* acc = pointStruct(0, 0);
   int hitboxRadius = radius - 2;
-  circleHitbox* newHitbox = circleHitboxStruct(position, hitboxRadius);
+  squareHitbox* newHitbox = centreSquareHitboxStruct(position, 2*hitboxRadius);
 
   // assign values to circle
   newCircle->position = pos;
@@ -220,6 +220,24 @@ Circle* circleStruct(point* position, int radius, point* velocity,
   newCircle->isVisible = true;
 
   return newCircle;
+}
+
+void freeCircle(Circle* circle){
+  free(circle->position);
+  free(circle->velocity);
+  free(circle->acceleration);
+  free(circle->hitbox->centre);
+  free(circle->hitbox->bottomRightPoint);
+  free(circle->hitbox->topLeftPoint);
+  free(circle->hitbox);
+  //loop to free path points
+  int i = 0;
+  while(circle->path != NULL) {
+    free(&circle->path[i]);
+    i++;
+  }  
+  free(circle->path);
+  free(circle);
 }
 
 void moveCircle(Circle* circle[]) {
