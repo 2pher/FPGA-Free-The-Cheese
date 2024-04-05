@@ -111,4 +111,16 @@
     dest = __builtin_rdctl(5); \
   } while (0)
 
+  //audio device struct
+  //struct for audio device
+  typedef struct audioDevice {
+    volatile unsigned int control;
+    volatile unsigned char rarc;
+    volatile unsigned char ralc;
+    volatile unsigned char wsrc;
+    volatile unsigned char wslc;
+    volatile unsigned int ldata;
+    volatile unsigned int rdata;
+  } audioDevice;
+
 #endif

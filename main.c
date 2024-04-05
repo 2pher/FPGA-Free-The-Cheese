@@ -20,6 +20,7 @@ extern bool level1, level2;
 int OLD_COUNT1, OLD_COUNT2;
 extern int centiseconds, seconds, minutes;
 extern int old_seconds, old_minutes;
+extern audioDevice* audioBuffer;
 
 /* Function prototypes */
 void configVGA(void);
@@ -42,6 +43,7 @@ int main(void) {
   // Enable interrupts device-wide and board-wide
   configPS2();               // Enable PS2 interrupts
   configTimer();             // Enable Timer interrupts
+  configAudioDevice();       // Sets address of audioBuffer
   configVGA();               // Enable double buffering, draw title screen
   enableGlobalInterrupts();  // Enable global interrupts for DE1-SoC board
 

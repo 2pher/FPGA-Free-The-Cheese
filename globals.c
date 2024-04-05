@@ -15,3 +15,4 @@ int CHEESE_COUNT;
 int centiseconds, seconds, minutes;
 int old_seconds, old_minutes;
 bool level1, level2;
+audioDevice* audioBuffer;

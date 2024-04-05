@@ -1,10 +1,10 @@
 #include "draw.h"
-#include "interrupts.h"
 #include "audio_samples.h"
 
 extern volatile int pixel_buffer_start;
 extern bool level1, level2;
 extern int CHEESE_COUNT;
+extern audioDevice* audioBuffer;
 
 // plot 1 pixel given xy and colour
 void xy_plot_pixel(int x, int y, short int line_color) {

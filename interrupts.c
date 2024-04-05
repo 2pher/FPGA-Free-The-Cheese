@@ -7,6 +7,7 @@ extern volatile char byte1, byte2, byte3;
 extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT;
 extern bool ON_TITLE_SCREEN;
 extern int centiseconds, seconds, minutes;
+extern audioDevice* audioBuffer;
 
 /*******************************************************************************
  * Global interrupt enabler for board
@@ -34,6 +35,14 @@ void configTimer(void) {
 
   *(timer_ptr + 0x2) = (counter & 0xFFFF);
   *(timer_ptr + 0x3) = (counter >> 16) & 0xFFFF;
+}
+
+/*******************************************************************************
+ * Sets address of audio device
+ ******************************************************************************/
+void configAudioDevice(void){
+   //initialize the audioDevice struct at the audio base address
+  audioBuffer = ((audioDevice*)AUDIO_BASE);
 }
 
 /*******************************************************************************
@@ -164,9 +173,10 @@ void update_LED(void) {
   if (KEY_DOWN) *(LED_ptr) = 0x1;
 }
 
+/*******************************************************************************
+ * Subroutine to play a stored audio sample
+ ******************************************************************************/
 void playAudio(int samples[], int whichSound){
-  //initialize the audioDevice struct at the audio base address
-  audioDevice* const audioBuffer = ((audioDevice*)AUDIO_BASE);
   int i;
   //get size of samples based on the sound we want to play
   int size = -1;
@@ -182,9 +192,8 @@ void playAudio(int samples[], int whichSound){
   //loop across each sample
   for (i = 0; i < size; i++) {
     // output data if there is space in the output FIFOs
-    if ((audioBuffer->wsrc != 0) && (audioBuffer->wslc != 0)) {
-      audioBuffer->ldata = samples[i];
-      audioBuffer->rdata = samples[i];
-    }
+    while (audioBuffer->wsrc == 0);
+    audioBuffer->ldata = samples[i];
+    audioBuffer->rdata = samples[i];
   }
 }
