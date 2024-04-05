@@ -1,6 +1,7 @@
 #include "draw.h"
 
 extern volatile int pixel_buffer_start;
+extern bool level1, level2;
 
 // plot 1 pixel given xy and colour
 void xy_plot_pixel(int x, int y, short int line_color) {
@@ -68,6 +69,14 @@ void drawLevel1() {
   }
 }
 
+void drawLevel2() {
+  for (int x = 0; x < 320; x++) {
+    for (int y = 0; y < 240; y++) {
+      xy_plot_pixel(x, y, LEVEL2[y][x]);
+    }
+  }
+}
+
 // clear screen
 void clear_screen() {
   for (int x = 0; x < 320; x++) {
@@ -129,7 +138,7 @@ void draw_player_square(Square *square) {
        x <= square->position->x + half_side_length; x++) {
     for (int y = square->position->y - half_side_length;
          y <= square->position->y + half_side_length; y++) {
-      xy_plot_pixel(x, y, 0xFF00);
+      xy_plot_pixel(x, y, 0x01FF);
     }
   }
 }
@@ -145,14 +154,14 @@ void erase_player_square(point *oldSquare, Square *newSquare, int level) {
       for (int y = square->position->y - half_side_length;
            y <= square->position->y + half_side_length; y++) {
         if (level == 1) xy_plot_pixel(x, y, LEVEL1[y][x]);
+        if (level == 2) xy_plot_pixel(x, y, LEVEL2[y][x]);
       }
     }
   }
 }
 
 // Draw all circles
-void drawCircles(Circle *circle[], Circle *oldCircle[], int level) {
-  int size = sizeof(circle) / sizeof(circle[0]);
+void drawCircles(Circle *circle[], point *oldCircle[], int size, int level) {
   for (int i = 0; i < size; i++) {
     erase_circle(oldCircle[i], level);
     draw_circle(circle[i]);
@@ -161,7 +170,17 @@ void drawCircles(Circle *circle[], Circle *oldCircle[], int level) {
 
 // draw circle obstacle
 void draw_circle(Circle *circle) {
-  int top = ceil(circle->position->y - circle->radius);
+  int half_side_length = 2;
+  if (level2) half_side_length = 10;
+  for (int x = circle->position->x - half_side_length;
+       x <= circle->position->x + half_side_length; x++) {
+    for (int y = circle->position->y - half_side_length;
+         y <= circle->position->y + half_side_length; y++) {
+      xy_plot_pixel(x, y, 0xF800);
+    }
+  }
+
+/*   int top = ceil(circle->position->y - circle->radius);
   int bottom = floor(circle->position->y + circle->radius);
 
   for (int y = top; y <= bottom; y++) {
@@ -172,20 +191,64 @@ void draw_circle(Circle *circle) {
     for (int x = left; x <= right; x++) {
       xy_plot_pixel(x, y, 0xF800);
     }
+  } */
+}
+
+void erase_circle(point *circle, int level) {
+  int half_side_length = 2;
+  if (level2) half_side_length = 10;
+  for (int x = circle->x - half_side_length;
+       x <= circle->x + half_side_length; x++) {
+    for (int y = circle->y - half_side_length;
+         y <= circle->y + half_side_length; y++) {
+      if (level == 1) xy_plot_pixel(x, y, LEVEL1[y][x]);
+      if (level == 2) xy_plot_pixel(x, y, LEVEL2[y][x]);
+    }
   }
 }
 
-void erase_circle(Circle *circle, int level) {
-  int top = ceil(circle->position->y - circle->radius);
-  int bottom = floor(circle->position->y + circle->radius);
+//draw cheese
+void draw_cheese(Cheese* cheese){
+  int halfSideLength = cheese -> halfSideLength;
+  for (int i = 0; i < sizeof(CHEESE)/sizeof(CHEESE[0]); i++) {
+    xy_plot_pixel(CHEESE[i].x + cheese->position->x - halfSideLength, CHEESE[i].y + cheese->position->y - halfSideLength, CHEESE[i].color);
+  }
+}
 
-  for (int y = top; y <= bottom; y++) {
-    int dy = y - circle->position->y;
-    float dx = sqrt(circle->radius * circle->radius - dy * dy);
-    int left = ceil(circle->position->x - dx);
-    int right = floor(circle->position->x + dx);
-    for (int x = left; x <= right; x++) {
-      if (level == 1) xy_plot_pixel(x, y, LEVEL1[y][x]);
+void checkForCheese(Square* square, Cheese* cheese[], int size){
+  for(int i = 0; i < size; i++){
+    if (!cheese[i]->collected) {
+      int square_x1 = square->position->x - ((square->sideLength - 1) / 2);
+      int square_x2 = square->position->x + ((square->sideLength - 1) / 2);
+      int square_y1 = square->position->y - ((square->sideLength - 1) / 2);
+      int square_y2 = square->position->y + ((square->sideLength - 1) / 2);
+
+      int cheese_x1 = cheese[i]->position->x - cheese[i]->halfSideLength;  // Left
+      int cheese_x2 = cheese[i]->position->x + cheese[i]->halfSideLength;  // Right
+      int cheese_y1 = cheese[i]->position->y - cheese[i]->halfSideLength;  // Top
+      int cheese_y2 = cheese[i]->position->y + cheese[i]->halfSideLength;  // Bottom
+
+      // Check if squares have collided from any direction
+      if (square_x1 <= cheese_x2 && square_x2 >= cheese_x1 &&
+          square_y1 <= cheese_y2 && square_y2 >= cheese_y1) {
+        cheese[i]->collected = true;  // Collision detected
+        if (level2) square->respawn = cheese[i]->position;
+        erase_cheese(cheese[i]);
+      }
+    } else if (cheese[i]->collected && !cheese[i]->erasedTwice) {
+      erase_cheese(cheese[i]);
+      cheese[i]->erasedTwice = true;
+    }
+  }
+}
+
+//erase cheese
+void erase_cheese(Cheese* cheese){
+   int halfSideLength = cheese -> halfSideLength;
+  for(int x = cheese -> position -> x - halfSideLength; x <= cheese -> position -> x + halfSideLength; x++){
+    for(int y = cheese -> position -> y - halfSideLength; y <= cheese -> position -> y + halfSideLength; y++){
+      if(level1) xy_plot_pixel(x, y, LEVEL1[y][x]);
+      if(level2) xy_plot_pixel(x, y, LEVEL2[y][x]);
     }
   }
 }

@@ -16,6 +16,7 @@ void drawTitleScreen();
 void drawMouse(int mouse, bool draw);
 
 void drawLevel1();
+void drawLevel2();
 
 // clear screen
 void clear_screen();
@@ -31,9 +32,15 @@ void draw_player_square(Square* square);
 void erase_player_square(point* oldSquare, Square* square, int level);
 
 // draw circle obstacle
-void drawCircle(Circle* circle[], Circle* oldCircle[], int level);
+void drawCircles(Circle* circle[], point* oldCircle[], int size, int level);
 void draw_circle(Circle* circle);
-void erase_circle(Circle* circle, int level);
+void erase_circle(point* circle, int level);
+void checkForCheese(Square* square, Cheese* cheese[], int size);
+
+//draw cheese
+void draw_cheese(Cheese* cheese);
+//erase cheese
+void erase_cheese(Cheese* cheese);
 
 // Vsync helper function
 void wait_for_vsync();

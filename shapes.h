@@ -43,19 +43,36 @@ typedef struct Circle {
   int radius;
   squareHitbox* hitbox;
   int hitboxRadius;
-  point** path;
   bool isVisible;
 
 } Circle;
 
 // circle 'constructor'
-Circle* circleStruct(point* position, int radius, point* velocity,
-                     point** path);
+Circle* circleStruct(point* position, int radius, point* velocity);
 void freeCircle(Circle* circle);
 
-void moveCircle(Circle* circle[]);
+void moveCircles(Circle* circle[], int size);
+void moveCircles2(Circle* circle[], int size);
 
-void checkForCollisions(Square* square, Circle* circle[]);
+//cheese struct
+typedef struct Cheese {
+
+  point* position;
+  bool collected;
+  bool erasedTwice;
+  int halfSideLength;
+
+} Cheese;
+
+//coin constructor
+Cheese* cheeseStruct(point* position);
+//destructor
+void freeCheese(Cheese* cheese);
+
+
+void checkForCollisions(Square* square, Circle* circle[], int size);
 bool collided(Square* square, Circle* circle);
+
+bool checkBoundaryDiagonal(Square* square, int dx, int dy);
 
 #endif
