@@ -1,7 +1,6 @@
 #ifndef SHAPES_H
 #define SHAPES_H
 
-#include "display.h"
 #include "globalHeader.h"
 #include "levels.h"
 #include "utilities.h"

@@ -1,12 +1,10 @@
-#include "death_counter.h"
-#include "display.h"
+#include "audio_samples.h"
 #include "draw.h"
 #include "globalHeader.h"
 #include "interrupts.h"
 #include "levels.h"
 #include "shapes.h"
 #include "title_screen.h"
-#include "audio_samples.h"
 
 /* Declare global variables */
 extern volatile int pixel_buffer_start;
@@ -20,6 +18,7 @@ extern bool level1, level2;
 int OLD_COUNT1, OLD_COUNT2;
 extern int centiseconds, seconds, minutes;
 extern int old_seconds, old_minutes;
+int prev_seconds, prev_minutes;
 
 /* Function prototypes */
 void configVGA(void);
@@ -168,6 +167,11 @@ int main(void) {
       prevEnemies[i] = enemies[i]->position;
     }
 
+    updateTimer();
+    old_minutes = prev_minutes;
+    old_seconds = prev_seconds;
+    prev_minutes = minutes;
+    prev_seconds = seconds;
     display_HEX(byte1, byte2, byte3);
     update_LED();
 
@@ -269,6 +273,11 @@ int main(void) {
       prevEnemies[i] = enemies2[i]->position;
     }
 
+    updateTimer();
+    old_minutes = prev_minutes;
+    old_seconds = prev_seconds;
+    prev_minutes = minutes;
+    prev_seconds = seconds;
     display_HEX(byte1, byte2, byte3);
     update_LED();
 
@@ -334,22 +343,6 @@ void updateTitleScreen() {
   counter = 0;
   while (counter != 5000000) counter++;
 }
-
-/* void resetBackground() {
-  volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
-
-  // Draw background on back buffer
-  drawBackground();
-  drawDeathCounter();
-  updateCount(0, 1);
-  wait_for_vsync();                            // Send to front
-  pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // Get new back buffer pointer
-
-  // Draw background on back buffer again to "reset" both frames
-  drawBackground();
-  drawDeathCounter();
-  updateCount(0, 1);
-} */
 
 void drawDeathCounter() {
   for (int i = 0; i < (sizeof(DEATH_COUNTER) / sizeof(DEATH_COUNTER[0])); i++) {

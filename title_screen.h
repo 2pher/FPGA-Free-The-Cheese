@@ -1,7 +1,6 @@
 #ifndef TITLE_SCREEN_H
 #define TITLE_SCREEN_H
 
-#include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
 

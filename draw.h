@@ -4,6 +4,7 @@
 #include "globalHeader.h"
 #include "levels.h"
 #include "shapes.h"
+#include "death_counter.h"
 #include "title_screen.h"
 #include "utilities.h"
 
@@ -44,5 +45,13 @@ void erase_cheese(Cheese* cheese);
 
 // Vsync helper function
 void wait_for_vsync();
+
+void drawLevelCount(int count);
+void drawCheeseCounter(int max_count);
+void updateCheeseCounter();
+
+void drawTimer();
+void updateTimer();
+
 
 #endif
