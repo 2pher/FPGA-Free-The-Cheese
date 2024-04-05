@@ -31,7 +31,7 @@ void configPS2(void) {
  ******************************************************************************/
 void configTimer(void) {
   volatile int *timer_ptr = (int *)TIMER_BASE;
-  int counter = 500000;  // 100 milliseconds
+  int counter = 1000000;  // 100 milliseconds
 
   *(timer_ptr + 0x2) = (counter & 0xFFFF);
   *(timer_ptr + 0x3) = (counter >> 16) & 0xFFFF;
@@ -115,6 +115,7 @@ void timer_ISR(void) {
   volatile int *timer_ptr = (int *)TIMER_BASE;
 
   *(timer_ptr) = 0;  // Clear interrupt
+  centiseconds++;
 
   if (centiseconds == 99) {
     seconds++;
@@ -125,8 +126,6 @@ void timer_ISR(void) {
     minutes++;
     seconds = 0;
   }
-
-  centiseconds++;
 }
 
 /*******************************************************************************

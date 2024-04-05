@@ -211,16 +211,16 @@ int main(void) {
   point* q9 = pointStruct(120, 157);
   point* q10 = pointStruct(130, 157);
 
-  Circle* f1 = circleStruct(q1, 5, up);
-  Circle* f2 = circleStruct(q2, 5, up);
-  Circle* f3 = circleStruct(q3, 5, up);
-  Circle* f4 = circleStruct(q4, 5, up);
-  Circle* f5 = circleStruct(q5, 5, left);
-  Circle* f6 = circleStruct(q6, 5, left);
-  Circle* f7 = circleStruct(q7, 5, left);
-  Circle* f8 = circleStruct(q8, 5, left);
-  Circle* f9 = circleStruct(q9, 5, left);
-  Circle* f10 = circleStruct(q10, 5, left);
+  Circle* f1 = circleStruct(q1, 11, up);
+  Circle* f2 = circleStruct(q2, 11, up);
+  Circle* f3 = circleStruct(q3, 11, up);
+  Circle* f4 = circleStruct(q4, 11, up);
+  Circle* f5 = circleStruct(q5, 11, left);
+  Circle* f6 = circleStruct(q6, 11, left);
+  Circle* f7 = circleStruct(q7, 11, left);
+  Circle* f8 = circleStruct(q8, 11, left);
+  Circle* f9 = circleStruct(q9, 11, left);
+  Circle* f10 = circleStruct(q10, 11, left);
   Circle* enemies2[] = {f1, f2, f3, f4, f5, f6, f7, f8, f9, f10};
 
   for (int i = 0; i < 10; i++) {
@@ -229,9 +229,9 @@ int main(void) {
   }
 
   CHEESE_COUNT = 0;
-  point* dp1 = pointStruct(249, 53);
-  point* dp2 = pointStruct(283, 159);
-  point* dp3 = pointStruct(85, 185);
+  point* dp1 = pointStruct(251, 53);
+  point* dp2 = pointStruct(283, 157);
+  point* dp3 = pointStruct(72, 185);
 
   Cheese* d1 = cheeseStruct(dp1);
   Cheese* d2 = cheeseStruct(dp2);
@@ -335,7 +335,7 @@ void updateTitleScreen() {
   drawMouse(3, true);
   wait_for_vsync();
   counter = 0;
-  while (counter != 75000000) counter++;
+  while (counter != 50000000) counter++;
 
   // Erase mouse 3
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);
@@ -402,70 +402,70 @@ void updateCount(int num, int digit) {
       if (digit == 1)
         xy_plot_pixel(NUM_0[i].x + 146, NUM_0[i].y + 7, 0xFFFF);
       else
-        xy_plot_pixel(NUM_0[i].x + 158, NUM_0[i].y + 7, 0xFFFF);
+        xy_plot_pixel(NUM_0[i].x + 156, NUM_0[i].y + 7, 0xFFFF);
     }
   } else if (num == 1) {
     for (int i = 0; i < (sizeof(NUM_1) / sizeof(NUM_1[0])); i++) {
       if (digit == 1)
         xy_plot_pixel(NUM_1[i].x + 146, NUM_1[i].y + 7, 0xFFFF);
       else
-        xy_plot_pixel(NUM_1[i].x + 158, NUM_1[i].y + 7, 0xFFFF);
+        xy_plot_pixel(NUM_1[i].x + 156, NUM_1[i].y + 7, 0xFFFF);
     }
   } else if (num == 2) {
     for (int i = 0; i < (sizeof(NUM_2) / sizeof(NUM_2[0])); i++) {
       if (digit == 1)
         xy_plot_pixel(NUM_2[i].x + 146, NUM_2[i].y + 7, 0xFFFF);
       else
-        xy_plot_pixel(NUM_2[i].x + 158, NUM_2[i].y + 7, 0xFFFF);
+        xy_plot_pixel(NUM_2[i].x + 156, NUM_2[i].y + 7, 0xFFFF);
     }
   } else if (num == 3) {
     for (int i = 0; i < (sizeof(NUM_3) / sizeof(NUM_3[0])); i++) {
       if (digit == 1)
         xy_plot_pixel(NUM_3[i].x + 146, NUM_3[i].y + 7, 0xFFFF);
       else
-        xy_plot_pixel(NUM_3[i].x + 158, NUM_3[i].y + 7, 0xFFFF);
+        xy_plot_pixel(NUM_3[i].x + 156, NUM_3[i].y + 7, 0xFFFF);
     }
   } else if (num == 4) {
     for (int i = 0; i < (sizeof(NUM_4) / sizeof(NUM_4[0])); i++) {
       if (digit == 1)
         xy_plot_pixel(NUM_4[i].x + 146, NUM_4[i].y + 7, 0xFFFF);
       else
-        xy_plot_pixel(NUM_4[i].x + 158, NUM_4[i].y + 7, 0xFFFF);
+        xy_plot_pixel(NUM_4[i].x + 156, NUM_4[i].y + 7, 0xFFFF);
     }
   } else if (num == 5) {
     for (int i = 0; i < (sizeof(NUM_5) / sizeof(NUM_5[0])); i++) {
       if (digit == 1)
         xy_plot_pixel(NUM_5[i].x + 146, NUM_5[i].y + 7, 0xFFFF);
       else
-        xy_plot_pixel(NUM_5[i].x + 158, NUM_5[i].y + 7, 0xFFFF);
+        xy_plot_pixel(NUM_5[i].x + 156, NUM_5[i].y + 7, 0xFFFF);
     }
   } else if (num == 6) {
     for (int i = 0; i < (sizeof(NUM_6) / sizeof(NUM_6[0])); i++) {
       if (digit == 1)
         xy_plot_pixel(NUM_6[i].x + 146, NUM_6[i].y + 7, 0xFFFF);
       else
-        xy_plot_pixel(NUM_6[i].x + 158, NUM_6[i].y + 7, 0xFFFF);
+        xy_plot_pixel(NUM_6[i].x + 156, NUM_6[i].y + 7, 0xFFFF);
     }
   } else if (num == 7) {
     for (int i = 0; i < (sizeof(NUM_7) / sizeof(NUM_7[0])); i++) {
       if (digit == 1)
         xy_plot_pixel(NUM_7[i].x + 146, NUM_7[i].y + 7, 0xFFFF);
       else
-        xy_plot_pixel(NUM_7[i].x + 158, NUM_7[i].y + 7, 0xFFFF);
+        xy_plot_pixel(NUM_7[i].x + 156, NUM_7[i].y + 7, 0xFFFF);
     }
   } else if (num == 8) {
     for (int i = 0; i < (sizeof(NUM_8) / sizeof(NUM_8[0])); i++) {
       if (digit == 1)
         xy_plot_pixel(NUM_8[i].x + 146, NUM_8[i].y + 7, 0xFFFF);
       else
-        xy_plot_pixel(NUM_8[i].x + 158, NUM_8[i].y + 7, 0xFFFF);
+        xy_plot_pixel(NUM_8[i].x + 156, NUM_8[i].y + 7, 0xFFFF);
     }
   } else {  // num = 9
     for (int i = 0; i < (sizeof(NUM_9) / sizeof(NUM_9[0])); i++) {
       if (digit == 1)
         xy_plot_pixel(NUM_9[i].x + 146, NUM_9[i].y + 7, 0xFFFF);
       else
-        xy_plot_pixel(NUM_9[i].x + 158, NUM_9[i].y + 7, 0xFFFF);
+        xy_plot_pixel(NUM_9[i].x + 156, NUM_9[i].y + 7, 0xFFFF);
     }
   }
 }
@@ -504,6 +504,7 @@ void configLevel2() {
   updateDeathCounter();
   drawCheeseCounter(3);
   drawLevelCount(2);
+  drawColons();
   wait_for_vsync();                            // Send to front
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // Get new back buffer pointer
 
@@ -512,6 +513,7 @@ void configLevel2() {
   drawDeathCounter();
   updateDeathCounter();
   drawCheeseCounter(3);
+  drawColons();
   drawLevelCount(2);
 }
 

@@ -52,6 +52,7 @@ void updateCheeseCounter();
 
 void drawTimer();
 void updateTimer();
+void drawColons();
 
 
 #endif
