@@ -76,7 +76,7 @@ int main(void) {
     // Animate the mouse until user presses enter
     updateTitleScreen();
   }
-
+  
   /*******************************************************************************
    *  LEVEL 1
    ******************************************************************************/
@@ -191,6 +191,7 @@ int main(void) {
    *  LEVEL 2
    ******************************************************************************/
   configLevel2();
+  playAudio(NEXTLEVEL, NEXTLEVEL_SOUND);
   level2 = true;
 
   // Initialize starting square

@@ -220,7 +220,7 @@ void checkForCheese(Square *square, Cheese *cheese[], int size) {
         erase_cheese(cheese[i]);
         CHEESE_COUNT++;
         updateCheeseCounter();
-        //playAudio(WILHELM, TEST_SOUND);
+        playAudio(EATCHEESE, CHEESE_SOUND);
       }
     } else if (cheese[i]->collected && !cheese[i]->erasedTwice) {
       erase_cheese(cheese[i]);

@@ -1,4 +1,5 @@
 #include "shapes.h"
+#include "audio_samples.h"
 
 extern bool KEY_UP, KEY_DOWN, KEY_RIGHT, KEY_LEFT;
 extern int DEATH_COUNT;
@@ -306,6 +307,7 @@ void checkForCollisions(Square* square, Circle* circle[], int size) {
     if (collided(square, circle[i])) {
       square->position = square->respawn;
       DEATH_COUNT++;
+      playAudio(DEATH, DEATH_SOUND);
     }
   }
 }

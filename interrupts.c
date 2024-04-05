@@ -1,4 +1,5 @@
 #include "interrupts.h"
+#include "audio_samples.h"
 
 #include "globalHeader.h"
 
@@ -72,6 +73,7 @@ void PS2_ISR(void) {
 
     if (ON_TITLE_SCREEN && break_code && byte3 == (char)0x29) {
       ON_TITLE_SCREEN = false;
+      playAudio(NEXTLEVEL, NEXTLEVEL_SOUND);
     }
 
     // Update globals.c vars accordingly
@@ -182,6 +184,12 @@ void playAudio(int samples[], int whichSound) {
   int size = -1;
   if (whichSound == TEST_SOUND) {
     size = 8932;  // wilhelm sound
+  }else if(whichSound == CHEESE_SOUND){
+    size = 1536;
+  }else if(whichSound == NEXTLEVEL_SOUND){
+    size = 18624;
+  }else if(whichSound == DEATH_SOUND){
+    size = 5568;
   } else {
     return;
   }
