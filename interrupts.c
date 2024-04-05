@@ -127,7 +127,6 @@ void timer_ISR(void) {
   }
 
   centiseconds++;
-  updateTimer();
 }
 
 /*******************************************************************************
@@ -176,20 +175,22 @@ void update_LED(void) {
 /*******************************************************************************
  * Subroutine to play a stored audio sample
  ******************************************************************************/
-void playAudio(int samples[], int whichSound){
+void playAudio(int samples[], int whichSound) {
+  // initialize the audioDevice struct at the audio base address
+  audioDevice *const audioBuffer = ((audioDevice *)AUDIO_BASE);
   int i;
-  //get size of samples based on the sound we want to play
+  // get size of samples based on the sound we want to play
   int size = -1;
-  if(whichSound == TEST_SOUND){
-    size = 8932; //wilhelm sound
-  }else{
+  if (whichSound == TEST_SOUND) {
+    size = 8932;  // wilhelm sound
+  } else {
     return;
   }
-  //clear output FIFO
+  // clear output FIFO
   audioBuffer->control = 0x8;
   // resume input conversion
   audioBuffer->control = 0x0;
-  //loop across each sample
+  // loop across each sample
   for (i = 0; i < size; i++) {
     // output data if there is space in the output FIFOs
     while (audioBuffer->wsrc == 0);

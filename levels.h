@@ -1,7 +1,6 @@
 #ifndef LEVELS_H
 #define LEVELS_H
 
-#include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
 

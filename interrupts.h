@@ -1,7 +1,6 @@
 #ifndef INTERRUPTS_H
 #define INTERRUPTS_H
 
-#include "display.h"
 #include "globalHeader.h"
 
 /*******************************************************************************

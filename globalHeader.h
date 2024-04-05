@@ -1,11 +1,9 @@
 #ifndef GLOBALHEADER_H
 #define GLOBALHEADER_H
 
-#include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 
 #define BOARD "DE1-SoC"
 
