@@ -53,6 +53,6 @@ typedef struct audioDevice {
 /*******************************************************************************
  * Subroutine to play a stored audio sample
  ******************************************************************************/
-void playAudio(int samples[], int size);
+void playAudio(int samples[], int whichSound);
 
 #endif

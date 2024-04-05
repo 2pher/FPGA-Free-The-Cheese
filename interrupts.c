@@ -164,10 +164,17 @@ void update_LED(void) {
   if (KEY_DOWN) *(LED_ptr) = 0x1;
 }
 
-void playAudio(int samples[], int size){
+void playAudio(int samples[], int whichSound){
   //initialize the audioDevice struct at the audio base address
   audioDevice* const audioBuffer = ((audioDevice*)AUDIO_BASE);
   int i;
+  //get size of samples based on the sound we want to play
+  int size = -1;
+  if(whichSound == TEST_SOUND){
+    size = 8932; //wilhelm sound
+  }else{
+    return;
+  }
   //clear output FIFO
   audioBuffer->control = 0x8;
   // resume input conversion

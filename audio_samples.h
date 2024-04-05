@@ -12,7 +12,7 @@
 //get to next level sound
 
 //test: wilhelm
-static int wilhelm[] = {
+static int WILHELM[] = {
 0xfffbeb96, 0xffb2de9b, 0xffd2add6, 0x0030bc7c,
 0x002dab2e, 0x0063c21d, 0x004a0e3e, 0xfff5ede4,
 0x004ed094, 0x008c65d8, 0x0075a7fc, 0x009e4ffe,

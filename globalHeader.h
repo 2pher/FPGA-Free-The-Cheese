@@ -57,6 +57,12 @@
 #define HPS_TIMER3_BASE 0xFFD01000
 #define FPGA_BRIDGE 0xFFD0501C
 
+/* Cyclone V HPS devices */
+#define TEST_SOUND 0
+#define CHEESE_SOUND 1
+#define NEXTLEVEL_SOUND 2
+#define DEATH_SOUND 3 
+
 /* Control registers to enable interrupts */
 #define CTL0 0x1C000000
 #define CTL3 0x1C00000C

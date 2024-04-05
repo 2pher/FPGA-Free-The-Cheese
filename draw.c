@@ -1,4 +1,6 @@
 #include "draw.h"
+#include "interrupts.h"
+#include "audio_samples.h"
 
 extern volatile int pixel_buffer_start;
 extern bool level1, level2;
@@ -221,6 +223,7 @@ void checkForCheese(Square *square, Cheese *cheese[], int size) {
         if (level2) square->respawn = cheese[i]->position;
         erase_cheese(cheese[i]);
         updateCheeseCounter();
+        playAudio(WILHELM, TEST_SOUND);
       }
     } else if (cheese[i]->collected && !cheese[i]->erasedTwice) {
       erase_cheese(cheese[i]);
