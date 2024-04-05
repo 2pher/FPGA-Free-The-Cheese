@@ -212,6 +212,12 @@ void draw_cheese(Cheese *cheese) {
   }
 }
 
+//thread for playing cheese music
+void *cheeseMusic(void *vargp){ 
+    playAudio(EATCHEESE, CHEESE_SOUND); 
+    return NULL; 
+} 
+
 void checkForCheese(Square *square, Cheese *cheese[], int size) {
   for (int i = 0; i < size; i++) {
     if (!cheese[i]->collected) {
@@ -234,10 +240,12 @@ void checkForCheese(Square *square, Cheese *cheese[], int size) {
           square_y1 <= cheese_y2 && square_y2 >= cheese_y1) {
         cheese[i]->collected = true;  // Collision detected
         if (level2) square->respawn = cheese[i]->position;
+        pthread_t cheeseMusicThread;
+        pthread_create(&cheeseMusicThread, NULL, cheeseMusic, NULL);
         erase_cheese(cheese[i]);
         CHEESE_COUNT++;
         updateCheeseCounter();
-        playAudio(EATCHEESE, CHEESE_SOUND);
+        
       }
     } else if (cheese[i]->collected && !cheese[i]->erasedTwice) {
       erase_cheese(cheese[i]);
