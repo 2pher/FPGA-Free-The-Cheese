@@ -128,6 +128,10 @@ void interrupt_handler(void) {
   int ipending;
   NIOS2_READ_IPENDING(ipending);
 
+  if (ipending & 0x1) {
+    timer_ISR();
+  }
+
   if (ipending & 0x80) {  // PS/2 port is interrupt level 7
     PS2_ISR();
   }

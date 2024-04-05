@@ -12,4 +12,6 @@ int DEATH_COUNT;                             // Number of user deaths
 short int buffer1[240][512];                 // Store into front buffer
 short int buffer2[240][512];                 // Store into back buffer
 int CHEESE_COUNT;
+int centiseconds, seconds, minutes;
+int old_seconds, old_minutes;
 bool level1, level2;

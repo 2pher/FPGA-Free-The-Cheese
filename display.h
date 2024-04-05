@@ -7,7 +7,11 @@
 #include "title_screen.h"
 #include "utilities.h"
 
+void drawLevelCount(int count);
 void drawCheeseCounter(int max_count);
 void updateCheeseCounter();
+
+void drawTimer();
+void updateTimer();
 
 #endif

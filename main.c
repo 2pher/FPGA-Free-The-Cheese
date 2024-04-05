@@ -17,6 +17,8 @@ extern short int buffer2[240][512];  // Store into back buffer
 extern int DEATH_COUNT, CHEESE_COUNT;
 extern bool level1, level2;
 int OLD_COUNT1, OLD_COUNT2;
+extern int centiseconds, seconds, minutes;
+extern int old_seconds, old_minutes;
 
 /* Function prototypes */
 void configVGA(void);
@@ -34,9 +36,11 @@ void checkWin(Square*, int, Cheese*[], int);
  ******************************************************************************/
 int main(void) {
   volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
+  volatile int* timer_ptr = (int*)TIMER_BASE;
 
   // Enable interrupts device-wide and board-wide
   configPS2();               // Enable PS2 interrupts
+  configTimer();             // Enable Timer interrupts
   configVGA();               // Enable double buffering, draw title screen
   enableGlobalInterrupts();  // Enable global interrupts for DE1-SoC board
 
@@ -57,6 +61,11 @@ int main(void) {
   level1 = false;
   level2 = false;
   CHEESE_COUNT = 0;
+  centiseconds = 0;
+  seconds = 0;
+  minutes = 0;
+  old_seconds = 0;
+  old_minutes = 0;
 
   /*******************************************************************************
    *  TITLE SCREEN
@@ -126,6 +135,8 @@ int main(void) {
   for (int i = 0; i < 4; i++) {
     draw_cheese(cheeses[i]);
   }
+
+  *(timer_ptr + 1) = 0x7;  // STOP = 0, START = 0, CONT = 1, ITO = 1
 
   // Level 1 main loop
   while (ON_LEVEL1) {
@@ -472,14 +483,18 @@ void configLevel1() {
   drawDeathCounter();
   updateCount(0, 1);
   drawCheeseCounter(4);
+  drawLevelCount(1);
+  drawTimer();
   wait_for_vsync();                            // Send to front
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // Get new back buffer pointer
 
   // Draw background on back buffer again to "reset" both frames
   drawLevel1();
   drawDeathCounter();
-  drawCheeseCounter(4);
   updateCount(0, 1);
+  drawCheeseCounter(4);
+  drawLevelCount(1);
+  drawTimer();
 }
 
 void configLevel2() {
@@ -492,6 +507,7 @@ void configLevel2() {
   drawDeathCounter();
   updateDeathCounter();
   drawCheeseCounter(3);
+  drawLevelCount(2);
   wait_for_vsync();                            // Send to front
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // Get new back buffer pointer
 
@@ -500,6 +516,7 @@ void configLevel2() {
   drawDeathCounter();
   updateDeathCounter();
   drawCheeseCounter(3);
+  drawLevelCount(3);
 }
 
 void checkWin(Square* newSquare, int level, Cheese* cheeses[], int size) {

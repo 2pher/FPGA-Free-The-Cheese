@@ -6,13 +6,13 @@
 extern volatile char byte1, byte2, byte3;
 extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT;
 extern bool ON_TITLE_SCREEN;
-extern int DEATH_COUNT;  // TO BE REMOVED
+extern int centiseconds, seconds, minutes;
 
 /*******************************************************************************
  * Global interrupt enabler for board
  ******************************************************************************/
 void enableGlobalInterrupts(void) {
-  NIOS2_WRITE_IENABLE(0x80);  // Enable interrupts for PS2 (0x80)
+  NIOS2_WRITE_IENABLE(0x81);  // Enable interrupts for PS2 (0x80) and timer (1)
   NIOS2_WRITE_STATUS(1);      // Enable Nios II interrupts
 }
 
@@ -23,6 +23,17 @@ void configPS2(void) {
   volatile int *PS2_ptr = (int *)PS2_BASE;
   *(PS2_ptr) = 0xFF;     // Reset
   *(PS2_ptr + 1) = 0x1;  // Enable interrupts in PS2 control register
+}
+
+/*******************************************************************************
+ * Global interrupt enabler for board
+ ******************************************************************************/
+void configTimer(void) {
+  volatile int *timer_ptr = (int *)TIMER_BASE;
+  int counter = 500000;  // 100 milliseconds
+
+  *(timer_ptr + 0x2) = (counter & 0xFFFF);
+  *(timer_ptr + 0x3) = (counter >> 16) & 0xFFFF;
 }
 
 /*******************************************************************************
@@ -82,14 +93,32 @@ void PS2_ISR(void) {
         KEY_DOWN = false;
       else
         KEY_DOWN = true;
-
-    } else if (byte2 != (char)0xF0 && byte2 != (char)0x59 &&
-               byte3 == (char)0x59) {
-      DEATH_COUNT++;  // TO BE REMOVED
     }
   }
 
   return;
+}
+
+/*******************************************************************************
+ * Interrupt handler for Timer
+ ******************************************************************************/
+void timer_ISR(void) {
+  volatile int *timer_ptr = (int *)TIMER_BASE;
+
+  *(timer_ptr) = 0;  // Clear interrupt
+
+  if (centiseconds == 99) {
+    seconds++;
+    centiseconds = 0;
+  }
+
+  if (seconds == 59) {
+    minutes++;
+    seconds = 0;
+  }
+
+  centiseconds++;
+  updateTimer();
 }
 
 /*******************************************************************************
