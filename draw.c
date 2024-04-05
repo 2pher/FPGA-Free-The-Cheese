@@ -1,9 +1,10 @@
 #include "draw.h"
-#include "interrupts.h"
+
 #include "audio_samples.h"
+#include "interrupts.h"
 
 extern volatile int pixel_buffer_start;
-extern bool level1, level2;
+extern bool level1, level2, level3;
 extern int CHEESE_COUNT;
 extern audioDevice *audioBuffer;
 extern int centiseconds, seconds, minutes;
@@ -64,6 +65,14 @@ void drawLevel2() {
   for (int x = 0; x < 320; x++) {
     for (int y = 0; y < 240; y++) {
       xy_plot_pixel(x, y, LEVEL2[y][x]);
+    }
+  }
+}
+
+void drawLevel3() {
+  for (int x = 0; x < 320; x++) {
+    for (int y = 0; y < 240; y++) {
+      xy_plot_pixel(x, y, LEVEL3[y][x]);
     }
   }
 }
@@ -575,7 +584,7 @@ void updateTimer() {
       }
     }
   }
-  
+
   if (old_minutes != minutes) {
     for (int x = 0; x < 20; x++) {
       for (int y = 0; y < 12; y++) {

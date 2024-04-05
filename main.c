@@ -10,11 +10,11 @@
 extern volatile int pixel_buffer_start;
 extern volatile char byte1, byte2, byte3;
 extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT;
-extern bool ON_TITLE_SCREEN, ON_LEVEL1, ON_LEVEL2;
+extern bool ON_TITLE_SCREEN, ON_LEVEL1, ON_LEVEL2, ON_LEVEL3;
 extern short int buffer1[240][512];  // Store into front buffer
 extern short int buffer2[240][512];  // Store into back buffer
 extern int DEATH_COUNT, CHEESE_COUNT;
-extern bool level1, level2;
+extern bool level1, level2, level3;
 int OLD_COUNT1, OLD_COUNT2;
 extern int centiseconds, seconds, minutes;
 extern int old_seconds, old_minutes;
@@ -30,6 +30,7 @@ void updateDeathCounter(void);
 void updateCount(int, int);
 void configLevel1(void);
 void configLevel2(void);
+void configLevel3(void);
 void checkWin(Square*, int, Cheese*[], int);
 
 /*******************************************************************************
@@ -60,8 +61,10 @@ int main(void) {
   OLD_COUNT2 = 0;
   ON_LEVEL1 = true;
   ON_LEVEL2 = true;
+  ON_LEVEL3 = true;
   level1 = false;
   level2 = false;
+  level3 = false;
   CHEESE_COUNT = 0;
   centiseconds = 0;
   seconds = 0;
@@ -290,6 +293,71 @@ int main(void) {
     wait_for_vsync();
     pixel_buffer_start = *(pixel_ctrl_ptr + 1);
   }
+  level2 = false;
+
+  /*******************************************************************************
+   *  LEVEL 3
+   ******************************************************************************/
+  configLevel3();
+  level3 = true;
+
+  // Initialize starting square
+  point* initialLocation3 = pointStruct(33, 80);
+  Square* newSquare3 = squareStruct(initialLocation3, 9);
+  prevSquare = newSquare2->position;
+  oldSquare = newSquare2->position;
+
+  // Initialize all of the bots, create an array of them
+  point* r1 = pointStruct(72, 125);
+  point* r2 = pointStruct(72, 135);
+  point* r3 = pointStruct(72, 145);
+  point* r4 = pointStruct(72, 155);
+  point* r5 = pointStruct(80, 157);
+  point* r6 = pointStruct(90, 157);
+  point* r7 = pointStruct(100, 157);
+  point* r8 = pointStruct(110, 157);
+  point* r9 = pointStruct(120, 157);
+  point* r10 = pointStruct(130, 157);
+
+  Circle* g1 = circleStruct(r1, 3, down);
+  Circle* g2 = circleStruct(r2, 3, down);
+  Circle* g3 = circleStruct(r3, 3, up);
+  Circle* g4 = circleStruct(r4, 3, up);
+  Circle* g5 = circleStruct(r5, 3, down);
+  Circle* g6 = circleStruct(r6, 3, down);
+  Circle* g7 = circleStruct(r7, 3, up);
+  Circle* g8 = circleStruct(r8, 3, up);
+  Circle* g9 = circleStruct(r9, 3, right);
+  Circle* g10 = circleStruct(r10, 3, right);
+  Circle* g3 = circleStruct(r10, 3, right);
+  Circle* g12 = circleStruct(r10, 3, left);
+  Circle* g13 = circleStruct(r10, 3, left);
+  Circle* g14 = circleStruct(r10, 3, left);
+  Circle* enemies3[] = {g1, g2, g3, g4, g5, g6, g7, g8, g9, g10};
+
+  for (int i = 0; i < 14; i++) {
+    oldEnemies[i] = enemies3[i]->position;
+    prevEnemies[i] = enemies3[i]->position;
+  }
+
+  CHEESE_COUNT = 0;
+  point* dp1 = pointStruct(251, 53);
+  point* dp2 = pointStruct(283, 157);
+  point* dp3 = pointStruct(72, 185);
+
+  Cheese* d1 = cheeseStruct(dp1);
+  Cheese* d2 = cheeseStruct(dp2);
+  Cheese* d3 = cheeseStruct(dp3);
+
+  Cheese* cheeses2[] = {d1, d2, d3};
+  for (int i = 0; i < 3; i++) {
+    draw_cheese(cheeses2[i]);
+  }
+  wait_for_vsync();
+  pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+  for (int i = 0; i < 3; i++) {
+    draw_cheese(cheeses2[i]);
+  }
 }
 
 void configVGA() {
@@ -516,6 +584,30 @@ void configLevel2() {
   drawCheeseCounter(3);
   drawColons();
   drawLevelCount(2);
+}
+
+void configLevel3() {
+  volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
+
+  OLD_COUNT1 = -1;
+  OLD_COUNT2 = -1;
+  // Draw background & level on back buffer
+  drawLevel3();
+  drawDeathCounter();
+  updateDeathCounter();
+  drawCheeseCounter(2);
+  drawLevelCount(3);
+  drawColons();
+  wait_for_vsync();                            // Send to front
+  pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // Get new back buffer pointer
+
+  // Draw background on back buffer again to "reset" both frames
+  drawLevel3();
+  drawDeathCounter();
+  updateDeathCounter();
+  drawCheeseCounter(2);
+  drawColons();
+  drawLevelCount(3);
 }
 
 void checkWin(Square* newSquare, int level, Cheese* cheeses[], int size) {

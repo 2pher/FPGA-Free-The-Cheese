@@ -1,10 +1,10 @@
 #ifndef DRAW_H
 #define DRAW_H
 
+#include "death_counter.h"
 #include "globalHeader.h"
 #include "levels.h"
 #include "shapes.h"
-#include "death_counter.h"
 #include "title_screen.h"
 #include "utilities.h"
 
@@ -18,6 +18,7 @@ void drawMouse(int mouse, bool draw);
 
 void drawLevel1();
 void drawLevel2();
+void drawLevel3();
 
 // clear screen
 void clear_screen();
@@ -38,9 +39,9 @@ void draw_circle(Circle* circle);
 void erase_circle(point* circle, int level);
 void checkForCheese(Square* square, Cheese* cheese[], int size);
 
-//draw cheese
+// draw cheese
 void draw_cheese(Cheese* cheese);
-//erase cheese
+// erase cheese
 void erase_cheese(Cheese* cheese);
 
 // Vsync helper function
@@ -53,6 +54,5 @@ void updateCheeseCounter();
 void drawTimer();
 void updateTimer();
 void drawColons();
-
 
 #endif
