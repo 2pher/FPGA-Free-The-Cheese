@@ -1,9 +1,10 @@
 #include "shapes.h"
+
 #include "audio_samples.h"
 
 extern bool KEY_UP, KEY_DOWN, KEY_RIGHT, KEY_LEFT;
 extern int DEATH_COUNT;
-extern bool level1, level2;
+extern bool level1, level2, level3;
 
 // square 'constructor'
 Square* squareStruct(point* pos, int sideLength) {
@@ -284,6 +285,41 @@ void moveCircles2(Circle* circle[], int size) {
   }
 }
 
+void moveCircles3(Circle* circle[], int size) {
+  int unit_velocity = 2;
+  int velocity_y = 1;
+  int half_side_length = 3;
+  for (int i = 0; i < size; i++) {
+    circle[i]->position = addPoints(circle[i]->position, circle[i]->velocity);
+
+    if (circle[i]->velocity->y == -velocity_y) {
+      if (circle[i]->position->y <= 63) {
+        int old = circle[i]->position->x;
+        circle[i]->position = pointStruct(old, 63);
+        circle[i]->velocity = pointStruct(0, velocity_y);
+      }
+    } else if (circle[i]->velocity->y == velocity_y) {
+      if (circle[i]->position->y >= 182) {
+        int old = circle[i]->position->x;
+        circle[i]->position = pointStruct(old, 182);
+        circle[i]->velocity = pointStruct(0, -velocity_y);
+      }
+    } else if (circle[i]->velocity->x == unit_velocity) {
+      if (circle[i]->position->x >= 266) {
+        int old = circle[i]->position->y;
+        circle[i]->position = pointStruct(266, old);
+        circle[i]->velocity = pointStruct(-unit_velocity, 0);
+      }
+    } else {
+      if (circle[i]->position->x <= 57) {
+        int old = circle[i]->position->y;
+        circle[i]->position = pointStruct(57, old);
+        circle[i]->velocity = pointStruct(unit_velocity, 0);
+      }
+    }
+  }
+}
+
 // coin constructor
 Cheese* cheeseStruct(point* position) {
   Cheese* newCheese = malloc(sizeof(Cheese));
@@ -296,7 +332,7 @@ Cheese* cheeseStruct(point* position) {
   return newCheese;
 }
 
-// coin destructor
+// where it all started...
 void freeCheese(Cheese* cheese) {
   free(cheese->position);
   free(cheese);
@@ -307,7 +343,7 @@ void checkForCollisions(Square* square, Circle* circle[], int size) {
     if (collided(square, circle[i])) {
       square->position = square->respawn;
       DEATH_COUNT++;
-      playAudio(DEATH, DEATH_SOUND);
+      // playAudio(DEATH, DEATH_SOUND);
     }
   }
 }
@@ -343,6 +379,9 @@ bool checkBoundaryLeft(Square* square) {
     if (level2)
       if (LEVEL2[y][square->position->x - half_side_length - 1] == 0x0000)
         return false;
+    if (level3)
+      if (LEVEL3[y][square->position->x - half_side_length - 1] == 0x0000)
+        return false;
   }
   return true;
 }
@@ -356,6 +395,9 @@ bool checkBoundaryRight(Square* square) {
         return false;
     if (level2)
       if (LEVEL2[y][square->position->x + half_side_length + 1] == 0x0000)
+        return false;
+    if (level3)
+      if (LEVEL3[y][square->position->x + half_side_length + 1] == 0x0000)
         return false;
   }
   return true;
@@ -371,6 +413,9 @@ bool checkBoundaryUp(Square* square) {
     if (level2)
       if (LEVEL2[square->position->y - half_side_length - 1][x] == 0x0000)
         return false;
+    if (level3)
+      if (LEVEL3[square->position->y - half_side_length - 1][x] == 0x0000)
+        return false;
   }
   return true;
 }
@@ -385,6 +430,9 @@ bool checkBoundaryDown(Square* square) {
     if (level2)
       if (LEVEL2[square->position->y + half_side_length + 1][x] == 0x0000)
         return false;
+    if (level3)
+     if (LEVEL3[square->position->y + half_side_length + 1][x] == 0x0000)
+        return false;
   }
   return true;
 }
@@ -398,6 +446,11 @@ bool checkBoundaryDiagonal(Square* square, int dx, int dy) {
     }
   } else if (level2) {
     if (LEVEL2[square->position->y + (dy * half_side_length)]
+              [square->position->x + (dx * half_side_length)] == 0x0000) {
+      return false;
+    }
+  } else {
+    if (LEVEL3[square->position->y + (dy * half_side_length)]
               [square->position->x + (dx * half_side_length)] == 0x0000) {
       return false;
     }

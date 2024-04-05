@@ -155,6 +155,7 @@ void erase_player_square(point *oldSquare, Square *newSquare, int level) {
            y <= square->position->y + half_side_length; y++) {
         if (level == 1) xy_plot_pixel(x, y, LEVEL1[y][x]);
         if (level == 2) xy_plot_pixel(x, y, LEVEL2[y][x]);
+        if (level == 3) xy_plot_pixel(x, y, LEVEL3[y][x]);
       }
     }
   }
@@ -164,6 +165,8 @@ void erase_player_square(point *oldSquare, Square *newSquare, int level) {
 void drawCircles(Circle *circle[], point *oldCircle[], int size, int level) {
   for (int i = 0; i < size; i++) {
     erase_circle(oldCircle[i], level);
+  }
+  for (int i = 0; i < size; i++) {
     draw_circle(circle[i]);
   }
 }
@@ -188,8 +191,13 @@ void erase_circle(point *circle, int level) {
        x++) {
     for (int y = circle->y - half_side_length;
          y <= circle->y + half_side_length; y++) {
-      if (level == 1) xy_plot_pixel(x, y, LEVEL1[y][x]);
-      if (level == 2) xy_plot_pixel(x, y, LEVEL2[y][x]);
+      if (level == 1) {
+        xy_plot_pixel(x, y, LEVEL1[y][x]);
+      } else if (level == 2) {
+        xy_plot_pixel(x, y, LEVEL2[y][x]);
+      } else {
+        xy_plot_pixel(x, y, LEVEL3[y][x]);
+      }
     }
   }
 }
@@ -248,6 +256,7 @@ void erase_cheese(Cheese *cheese) {
          y <= cheese->position->y + halfSideLength; y++) {
       if (level1) xy_plot_pixel(x, y, LEVEL1[y][x]);
       if (level2) xy_plot_pixel(x, y, LEVEL2[y][x]);
+      if (level3) xy_plot_pixel(x, y, LEVEL3[y][x]);
     }
   }
 }
@@ -305,7 +314,11 @@ void drawCheeseCounter(int max_count) {
     xy_plot_pixel(39 + SLASH[i].x, 220 + SLASH[i].y, 0xFFFF);
   }
 
-  if (max_count == 3) {
+  if (max_count == 2) {
+    for (int i = 0; i < sizeof(NUM_2) / sizeof(NUM_2[0]); i++) {
+      xy_plot_pixel(49 + NUM_2[i].x, 220 + NUM_2[i].y, 0xFFFF);
+    }
+  } else if (max_count == 3) {
     for (int i = 0; i < sizeof(NUM_3) / sizeof(NUM_3[0]); i++) {
       xy_plot_pixel(49 + NUM_3[i].x, 220 + NUM_3[i].y, 0xFFFF);
     }
@@ -493,187 +506,183 @@ void updateTimer() {
       xy_plot_pixel(292 + NUM_9[i].x, 220 + NUM_9[i].y, 0xFFFF);
     }
   }
-  if (old_seconds != seconds) {
-    for (int x = 0; x < 20; x++) {
-      for (int y = 0; y < 12; y++) {
-        xy_plot_pixel(262 + x, 220 + y, LEVEL1[220 + y][262 + x]);
-      }
-    }
-
-    if (d4 == 0) {
-      for (int i = 0; i < sizeof(NUM_0) / sizeof(NUM_0[0]); i++) {
-        xy_plot_pixel(272 + NUM_0[i].x, 220 + NUM_0[i].y, 0xFFFF);
-      }
-    } else if (d4 == 1) {
-      for (int i = 0; i < sizeof(NUM_1) / sizeof(NUM_1[0]); i++) {
-        xy_plot_pixel(272 + NUM_1[i].x, 220 + NUM_1[i].y, 0xFFFF);
-      }
-    } else if (d4 == 2) {
-      for (int i = 0; i < sizeof(NUM_2) / sizeof(NUM_2[0]); i++) {
-        xy_plot_pixel(272 + NUM_2[i].x, 220 + NUM_2[i].y, 0xFFFF);
-      }
-    } else if (d4 == 3) {
-      for (int i = 0; i < sizeof(NUM_3) / sizeof(NUM_3[0]); i++) {
-        xy_plot_pixel(272 + NUM_3[i].x, 220 + NUM_3[i].y, 0xFFFF);
-      }
-    } else if (d4 == 4) {
-      for (int i = 0; i < sizeof(NUM_4) / sizeof(NUM_4[0]); i++) {
-        xy_plot_pixel(272 + NUM_4[i].x, 220 + NUM_4[i].y, 0xFFFF);
-      }
-    } else if (d4 == 5) {
-      for (int i = 0; i < sizeof(NUM_5) / sizeof(NUM_5[0]); i++) {
-        xy_plot_pixel(272 + NUM_5[i].x, 220 + NUM_5[i].y, 0xFFFF);
-      }
-    } else if (d4 == 6) {
-      for (int i = 0; i < sizeof(NUM_6) / sizeof(NUM_6[0]); i++) {
-        xy_plot_pixel(272 + NUM_6[i].x, 220 + NUM_6[i].y, 0xFFFF);
-      }
-    } else if (d4 == 7) {
-      for (int i = 0; i < sizeof(NUM_7) / sizeof(NUM_7[0]); i++) {
-        xy_plot_pixel(272 + NUM_7[i].x, 220 + NUM_7[i].y, 0xFFFF);
-      }
-    } else if (d4 == 8) {
-      for (int i = 0; i < sizeof(NUM_8) / sizeof(NUM_8[0]); i++) {
-        xy_plot_pixel(272 + NUM_8[i].x, 220 + NUM_8[i].y, 0xFFFF);
-      }
-    } else if (d4 == 9) {
-      for (int i = 0; i < sizeof(NUM_9) / sizeof(NUM_9[0]); i++) {
-        xy_plot_pixel(272 + NUM_9[i].x, 220 + NUM_9[i].y, 0xFFFF);
-      }
-    }
-
-    if (d3 == 0) {
-      for (int i = 0; i < sizeof(NUM_0) / sizeof(NUM_0[0]); i++) {
-        xy_plot_pixel(262 + NUM_0[i].x, 220 + NUM_0[i].y, 0xFFFF);
-      }
-    } else if (d3 == 1) {
-      for (int i = 0; i < sizeof(NUM_1) / sizeof(NUM_1[0]); i++) {
-        xy_plot_pixel(262 + NUM_1[i].x, 220 + NUM_1[i].y, 0xFFFF);
-      }
-    } else if (d3 == 2) {
-      for (int i = 0; i < sizeof(NUM_2) / sizeof(NUM_2[0]); i++) {
-        xy_plot_pixel(262 + NUM_2[i].x, 220 + NUM_2[i].y, 0xFFFF);
-      }
-    } else if (d3 == 3) {
-      for (int i = 0; i < sizeof(NUM_3) / sizeof(NUM_3[0]); i++) {
-        xy_plot_pixel(262 + NUM_3[i].x, 220 + NUM_3[i].y, 0xFFFF);
-      }
-    } else if (d3 == 4) {
-      for (int i = 0; i < sizeof(NUM_4) / sizeof(NUM_4[0]); i++) {
-        xy_plot_pixel(262 + NUM_4[i].x, 220 + NUM_4[i].y, 0xFFFF);
-      }
-    } else if (d3 == 5) {
-      for (int i = 0; i < sizeof(NUM_5) / sizeof(NUM_5[0]); i++) {
-        xy_plot_pixel(262 + NUM_5[i].x, 220 + NUM_5[i].y, 0xFFFF);
-      }
-    } else if (d3 == 6) {
-      for (int i = 0; i < sizeof(NUM_6) / sizeof(NUM_6[0]); i++) {
-        xy_plot_pixel(262 + NUM_6[i].x, 220 + NUM_6[i].y, 0xFFFF);
-      }
-    } else if (d3 == 7) {
-      for (int i = 0; i < sizeof(NUM_7) / sizeof(NUM_7[0]); i++) {
-        xy_plot_pixel(262 + NUM_7[i].x, 220 + NUM_7[i].y, 0xFFFF);
-      }
-    } else if (d3 == 8) {
-      for (int i = 0; i < sizeof(NUM_8) / sizeof(NUM_8[0]); i++) {
-        xy_plot_pixel(262 + NUM_8[i].x, 220 + NUM_8[i].y, 0xFFFF);
-      }
-    } else if (d3 = 9) {
-      for (int i = 0; i < sizeof(NUM_9) / sizeof(NUM_9[0]); i++) {
-        xy_plot_pixel(262 + NUM_9[i].x, 220 + NUM_9[i].y, 0xFFFF);
-      }
+  for (int x = 0; x < 20; x++) {
+    for (int y = 0; y < 12; y++) {
+      xy_plot_pixel(262 + x, 220 + y, LEVEL1[220 + y][262 + x]);
     }
   }
 
-  if (old_minutes != minutes) {
-    for (int x = 0; x < 20; x++) {
-      for (int y = 0; y < 12; y++) {
-        xy_plot_pixel(232 + x, 220 + y, LEVEL1[220 + y][232 + x]);
-      }
+  if (d4 == 0) {
+    for (int i = 0; i < sizeof(NUM_0) / sizeof(NUM_0[0]); i++) {
+      xy_plot_pixel(272 + NUM_0[i].x, 220 + NUM_0[i].y, 0xFFFF);
     }
-
-    if (d2 == 0) {
-      for (int i = 0; i < sizeof(NUM_0) / sizeof(NUM_0[0]); i++) {
-        xy_plot_pixel(242 + NUM_0[i].x, 220 + NUM_0[i].y, 0xFFFF);
-      }
-    } else if (d2 == 1) {
-      for (int i = 0; i < sizeof(NUM_1) / sizeof(NUM_1[0]); i++) {
-        xy_plot_pixel(242 + NUM_1[i].x, 220 + NUM_1[i].y, 0xFFFF);
-      }
-    } else if (d2 == 2) {
-      for (int i = 0; i < sizeof(NUM_2) / sizeof(NUM_2[0]); i++) {
-        xy_plot_pixel(242 + NUM_2[i].x, 220 + NUM_2[i].y, 0xFFFF);
-      }
-    } else if (d2 == 3) {
-      for (int i = 0; i < sizeof(NUM_3) / sizeof(NUM_3[0]); i++) {
-        xy_plot_pixel(242 + NUM_3[i].x, 220 + NUM_3[i].y, 0xFFFF);
-      }
-    } else if (d2 == 4) {
-      for (int i = 0; i < sizeof(NUM_4) / sizeof(NUM_4[0]); i++) {
-        xy_plot_pixel(242 + NUM_4[i].x, 220 + NUM_4[i].y, 0xFFFF);
-      }
-    } else if (d2 == 5) {
-      for (int i = 0; i < sizeof(NUM_5) / sizeof(NUM_5[0]); i++) {
-        xy_plot_pixel(242 + NUM_5[i].x, 220 + NUM_5[i].y, 0xFFFF);
-      }
-    } else if (d2 == 6) {
-      for (int i = 0; i < sizeof(NUM_6) / sizeof(NUM_6[0]); i++) {
-        xy_plot_pixel(242 + NUM_6[i].x, 220 + NUM_6[i].y, 0xFFFF);
-      }
-    } else if (d2 == 7) {
-      for (int i = 0; i < sizeof(NUM_7) / sizeof(NUM_7[0]); i++) {
-        xy_plot_pixel(242 + NUM_7[i].x, 220 + NUM_7[i].y, 0xFFFF);
-      }
-    } else if (d2 == 8) {
-      for (int i = 0; i < sizeof(NUM_8) / sizeof(NUM_8[0]); i++) {
-        xy_plot_pixel(242 + NUM_8[i].x, 220 + NUM_8[i].y, 0xFFFF);
-      }
-    } else if (d2 == 9) {
-      for (int i = 0; i < sizeof(NUM_9) / sizeof(NUM_9[0]); i++) {
-        xy_plot_pixel(242 + NUM_9[i].x, 220 + NUM_9[i].y, 0xFFFF);
-      }
+  } else if (d4 == 1) {
+    for (int i = 0; i < sizeof(NUM_1) / sizeof(NUM_1[0]); i++) {
+      xy_plot_pixel(272 + NUM_1[i].x, 220 + NUM_1[i].y, 0xFFFF);
     }
+  } else if (d4 == 2) {
+    for (int i = 0; i < sizeof(NUM_2) / sizeof(NUM_2[0]); i++) {
+      xy_plot_pixel(272 + NUM_2[i].x, 220 + NUM_2[i].y, 0xFFFF);
+    }
+  } else if (d4 == 3) {
+    for (int i = 0; i < sizeof(NUM_3) / sizeof(NUM_3[0]); i++) {
+      xy_plot_pixel(272 + NUM_3[i].x, 220 + NUM_3[i].y, 0xFFFF);
+    }
+  } else if (d4 == 4) {
+    for (int i = 0; i < sizeof(NUM_4) / sizeof(NUM_4[0]); i++) {
+      xy_plot_pixel(272 + NUM_4[i].x, 220 + NUM_4[i].y, 0xFFFF);
+    }
+  } else if (d4 == 5) {
+    for (int i = 0; i < sizeof(NUM_5) / sizeof(NUM_5[0]); i++) {
+      xy_plot_pixel(272 + NUM_5[i].x, 220 + NUM_5[i].y, 0xFFFF);
+    }
+  } else if (d4 == 6) {
+    for (int i = 0; i < sizeof(NUM_6) / sizeof(NUM_6[0]); i++) {
+      xy_plot_pixel(272 + NUM_6[i].x, 220 + NUM_6[i].y, 0xFFFF);
+    }
+  } else if (d4 == 7) {
+    for (int i = 0; i < sizeof(NUM_7) / sizeof(NUM_7[0]); i++) {
+      xy_plot_pixel(272 + NUM_7[i].x, 220 + NUM_7[i].y, 0xFFFF);
+    }
+  } else if (d4 == 8) {
+    for (int i = 0; i < sizeof(NUM_8) / sizeof(NUM_8[0]); i++) {
+      xy_plot_pixel(272 + NUM_8[i].x, 220 + NUM_8[i].y, 0xFFFF);
+    }
+  } else if (d4 == 9) {
+    for (int i = 0; i < sizeof(NUM_9) / sizeof(NUM_9[0]); i++) {
+      xy_plot_pixel(272 + NUM_9[i].x, 220 + NUM_9[i].y, 0xFFFF);
+    }
+  }
 
-    if (d1 == 0) {
-      for (int i = 0; i < sizeof(NUM_0) / sizeof(NUM_0[0]); i++) {
-        xy_plot_pixel(232 + NUM_0[i].x, 220 + NUM_0[i].y, 0xFFFF);
-      }
-    } else if (d1 == 1) {
-      for (int i = 0; i < sizeof(NUM_1) / sizeof(NUM_1[0]); i++) {
-        xy_plot_pixel(232 + NUM_1[i].x, 220 + NUM_1[i].y, 0xFFFF);
-      }
-    } else if (d1 == 2) {
-      for (int i = 0; i < sizeof(NUM_2) / sizeof(NUM_2[0]); i++) {
-        xy_plot_pixel(232 + NUM_2[i].x, 220 + NUM_2[i].y, 0xFFFF);
-      }
-    } else if (d1 == 3) {
-      for (int i = 0; i < sizeof(NUM_3) / sizeof(NUM_3[0]); i++) {
-        xy_plot_pixel(232 + NUM_3[i].x, 220 + NUM_3[i].y, 0xFFFF);
-      }
-    } else if (d1 == 4) {
-      for (int i = 0; i < sizeof(NUM_4) / sizeof(NUM_4[0]); i++) {
-        xy_plot_pixel(232 + NUM_4[i].x, 220 + NUM_4[i].y, 0xFFFF);
-      }
-    } else if (d1 == 5) {
-      for (int i = 0; i < sizeof(NUM_5) / sizeof(NUM_5[0]); i++) {
-        xy_plot_pixel(232 + NUM_5[i].x, 220 + NUM_5[i].y, 0xFFFF);
-      }
-    } else if (d1 == 6) {
-      for (int i = 0; i < sizeof(NUM_6) / sizeof(NUM_6[0]); i++) {
-        xy_plot_pixel(232 + NUM_6[i].x, 220 + NUM_6[i].y, 0xFFFF);
-      }
-    } else if (d1 == 7) {
-      for (int i = 0; i < sizeof(NUM_7) / sizeof(NUM_7[0]); i++) {
-        xy_plot_pixel(232 + NUM_7[i].x, 220 + NUM_7[i].y, 0xFFFF);
-      }
-    } else if (d1 == 8) {
-      for (int i = 0; i < sizeof(NUM_8) / sizeof(NUM_8[0]); i++) {
-        xy_plot_pixel(232 + NUM_8[i].x, 220 + NUM_8[i].y, 0xFFFF);
-      }
-    } else if (d1 == 9) {
-      for (int i = 0; i < sizeof(NUM_9) / sizeof(NUM_9[0]); i++) {
-        xy_plot_pixel(232 + NUM_9[i].x, 220 + NUM_9[i].y, 0xFFFF);
-      }
+  if (d3 == 0) {
+    for (int i = 0; i < sizeof(NUM_0) / sizeof(NUM_0[0]); i++) {
+      xy_plot_pixel(262 + NUM_0[i].x, 220 + NUM_0[i].y, 0xFFFF);
+    }
+  } else if (d3 == 1) {
+    for (int i = 0; i < sizeof(NUM_1) / sizeof(NUM_1[0]); i++) {
+      xy_plot_pixel(262 + NUM_1[i].x, 220 + NUM_1[i].y, 0xFFFF);
+    }
+  } else if (d3 == 2) {
+    for (int i = 0; i < sizeof(NUM_2) / sizeof(NUM_2[0]); i++) {
+      xy_plot_pixel(262 + NUM_2[i].x, 220 + NUM_2[i].y, 0xFFFF);
+    }
+  } else if (d3 == 3) {
+    for (int i = 0; i < sizeof(NUM_3) / sizeof(NUM_3[0]); i++) {
+      xy_plot_pixel(262 + NUM_3[i].x, 220 + NUM_3[i].y, 0xFFFF);
+    }
+  } else if (d3 == 4) {
+    for (int i = 0; i < sizeof(NUM_4) / sizeof(NUM_4[0]); i++) {
+      xy_plot_pixel(262 + NUM_4[i].x, 220 + NUM_4[i].y, 0xFFFF);
+    }
+  } else if (d3 == 5) {
+    for (int i = 0; i < sizeof(NUM_5) / sizeof(NUM_5[0]); i++) {
+      xy_plot_pixel(262 + NUM_5[i].x, 220 + NUM_5[i].y, 0xFFFF);
+    }
+  } else if (d3 == 6) {
+    for (int i = 0; i < sizeof(NUM_6) / sizeof(NUM_6[0]); i++) {
+      xy_plot_pixel(262 + NUM_6[i].x, 220 + NUM_6[i].y, 0xFFFF);
+    }
+  } else if (d3 == 7) {
+    for (int i = 0; i < sizeof(NUM_7) / sizeof(NUM_7[0]); i++) {
+      xy_plot_pixel(262 + NUM_7[i].x, 220 + NUM_7[i].y, 0xFFFF);
+    }
+  } else if (d3 == 8) {
+    for (int i = 0; i < sizeof(NUM_8) / sizeof(NUM_8[0]); i++) {
+      xy_plot_pixel(262 + NUM_8[i].x, 220 + NUM_8[i].y, 0xFFFF);
+    }
+  } else if (d3 = 9) {
+    for (int i = 0; i < sizeof(NUM_9) / sizeof(NUM_9[0]); i++) {
+      xy_plot_pixel(262 + NUM_9[i].x, 220 + NUM_9[i].y, 0xFFFF);
+    }
+  }
+
+  for (int x = 0; x < 20; x++) {
+    for (int y = 0; y < 12; y++) {
+      xy_plot_pixel(232 + x, 220 + y, LEVEL1[220 + y][232 + x]);
+    }
+  }
+
+  if (d2 == 0) {
+    for (int i = 0; i < sizeof(NUM_0) / sizeof(NUM_0[0]); i++) {
+      xy_plot_pixel(242 + NUM_0[i].x, 220 + NUM_0[i].y, 0xFFFF);
+    }
+  } else if (d2 == 1) {
+    for (int i = 0; i < sizeof(NUM_1) / sizeof(NUM_1[0]); i++) {
+      xy_plot_pixel(242 + NUM_1[i].x, 220 + NUM_1[i].y, 0xFFFF);
+    }
+  } else if (d2 == 2) {
+    for (int i = 0; i < sizeof(NUM_2) / sizeof(NUM_2[0]); i++) {
+      xy_plot_pixel(242 + NUM_2[i].x, 220 + NUM_2[i].y, 0xFFFF);
+    }
+  } else if (d2 == 3) {
+    for (int i = 0; i < sizeof(NUM_3) / sizeof(NUM_3[0]); i++) {
+      xy_plot_pixel(242 + NUM_3[i].x, 220 + NUM_3[i].y, 0xFFFF);
+    }
+  } else if (d2 == 4) {
+    for (int i = 0; i < sizeof(NUM_4) / sizeof(NUM_4[0]); i++) {
+      xy_plot_pixel(242 + NUM_4[i].x, 220 + NUM_4[i].y, 0xFFFF);
+    }
+  } else if (d2 == 5) {
+    for (int i = 0; i < sizeof(NUM_5) / sizeof(NUM_5[0]); i++) {
+      xy_plot_pixel(242 + NUM_5[i].x, 220 + NUM_5[i].y, 0xFFFF);
+    }
+  } else if (d2 == 6) {
+    for (int i = 0; i < sizeof(NUM_6) / sizeof(NUM_6[0]); i++) {
+      xy_plot_pixel(242 + NUM_6[i].x, 220 + NUM_6[i].y, 0xFFFF);
+    }
+  } else if (d2 == 7) {
+    for (int i = 0; i < sizeof(NUM_7) / sizeof(NUM_7[0]); i++) {
+      xy_plot_pixel(242 + NUM_7[i].x, 220 + NUM_7[i].y, 0xFFFF);
+    }
+  } else if (d2 == 8) {
+    for (int i = 0; i < sizeof(NUM_8) / sizeof(NUM_8[0]); i++) {
+      xy_plot_pixel(242 + NUM_8[i].x, 220 + NUM_8[i].y, 0xFFFF);
+    }
+  } else if (d2 == 9) {
+    for (int i = 0; i < sizeof(NUM_9) / sizeof(NUM_9[0]); i++) {
+      xy_plot_pixel(242 + NUM_9[i].x, 220 + NUM_9[i].y, 0xFFFF);
+    }
+  }
+
+  if (d1 == 0) {
+    for (int i = 0; i < sizeof(NUM_0) / sizeof(NUM_0[0]); i++) {
+      xy_plot_pixel(232 + NUM_0[i].x, 220 + NUM_0[i].y, 0xFFFF);
+    }
+  } else if (d1 == 1) {
+    for (int i = 0; i < sizeof(NUM_1) / sizeof(NUM_1[0]); i++) {
+      xy_plot_pixel(232 + NUM_1[i].x, 220 + NUM_1[i].y, 0xFFFF);
+    }
+  } else if (d1 == 2) {
+    for (int i = 0; i < sizeof(NUM_2) / sizeof(NUM_2[0]); i++) {
+      xy_plot_pixel(232 + NUM_2[i].x, 220 + NUM_2[i].y, 0xFFFF);
+    }
+  } else if (d1 == 3) {
+    for (int i = 0; i < sizeof(NUM_3) / sizeof(NUM_3[0]); i++) {
+      xy_plot_pixel(232 + NUM_3[i].x, 220 + NUM_3[i].y, 0xFFFF);
+    }
+  } else if (d1 == 4) {
+    for (int i = 0; i < sizeof(NUM_4) / sizeof(NUM_4[0]); i++) {
+      xy_plot_pixel(232 + NUM_4[i].x, 220 + NUM_4[i].y, 0xFFFF);
+    }
+  } else if (d1 == 5) {
+    for (int i = 0; i < sizeof(NUM_5) / sizeof(NUM_5[0]); i++) {
+      xy_plot_pixel(232 + NUM_5[i].x, 220 + NUM_5[i].y, 0xFFFF);
+    }
+  } else if (d1 == 6) {
+    for (int i = 0; i < sizeof(NUM_6) / sizeof(NUM_6[0]); i++) {
+      xy_plot_pixel(232 + NUM_6[i].x, 220 + NUM_6[i].y, 0xFFFF);
+    }
+  } else if (d1 == 7) {
+    for (int i = 0; i < sizeof(NUM_7) / sizeof(NUM_7[0]); i++) {
+      xy_plot_pixel(232 + NUM_7[i].x, 220 + NUM_7[i].y, 0xFFFF);
+    }
+  } else if (d1 == 8) {
+    for (int i = 0; i < sizeof(NUM_8) / sizeof(NUM_8[0]); i++) {
+      xy_plot_pixel(232 + NUM_8[i].x, 220 + NUM_8[i].y, 0xFFFF);
+    }
+  } else if (d1 == 9) {
+    for (int i = 0; i < sizeof(NUM_9) / sizeof(NUM_9[0]); i++) {
+      xy_plot_pixel(232 + NUM_9[i].x, 220 + NUM_9[i].y, 0xFFFF);
     }
   }
 }

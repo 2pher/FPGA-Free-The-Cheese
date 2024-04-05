@@ -53,6 +53,7 @@ void freeCircle(Circle* circle);
 
 void moveCircles(Circle* circle[], int size);
 void moveCircles2(Circle* circle[], int size);
+void moveCircles3(Circle* circle[], int size);
 
 // cheese struct
 typedef struct Cheese {
