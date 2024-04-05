@@ -1,6 +1,7 @@
 #ifndef SHAPES_H
 #define SHAPES_H
 
+#include "display.h"
 #include "globalHeader.h"
 #include "levels.h"
 #include "utilities.h"
@@ -54,9 +55,8 @@ void freeCircle(Circle* circle);
 void moveCircles(Circle* circle[], int size);
 void moveCircles2(Circle* circle[], int size);
 
-//cheese struct
+// cheese struct
 typedef struct Cheese {
-
   point* position;
   bool collected;
   bool erasedTwice;
@@ -64,11 +64,10 @@ typedef struct Cheese {
 
 } Cheese;
 
-//coin constructor
+// coin constructor
 Cheese* cheeseStruct(point* position);
-//destructor
+// destructor
 void freeCheese(Cheese* cheese);
-
 
 void checkForCollisions(Square* square, Circle* circle[], int size);
 bool collided(Square* square, Circle* circle);

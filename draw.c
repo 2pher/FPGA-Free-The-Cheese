@@ -2,6 +2,7 @@
 
 extern volatile int pixel_buffer_start;
 extern bool level1, level2;
+extern int CHEESE_COUNT;
 
 // plot 1 pixel given xy and colour
 void xy_plot_pixel(int x, int y, short int line_color) {
@@ -24,14 +25,6 @@ void drawTitleScreen(void) {
     }
   }
 }
-
-/* void drawBackground(void) {
-  for (int x = 0; x < 320; x++) {
-    for (int y = 0; y < 240; y++) {
-      xy_plot_pixel(x, y, BACKGROUND[y][x]);
-    }
-  }
-} */
 
 void drawMouse(int mouse, bool draw) {
   if (mouse == 1) {
@@ -227,6 +220,7 @@ void checkForCheese(Square *square, Cheese *cheese[], int size) {
         cheese[i]->collected = true;  // Collision detected
         if (level2) square->respawn = cheese[i]->position;
         erase_cheese(cheese[i]);
+        updateCheeseCounter();
       }
     } else if (cheese[i]->collected && !cheese[i]->erasedTwice) {
       erase_cheese(cheese[i]);

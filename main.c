@@ -1,4 +1,5 @@
 #include "death_counter.h"
+#include "display.h"
 #include "draw.h"
 #include "globalHeader.h"
 #include "interrupts.h"
@@ -13,7 +14,7 @@ extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT;
 extern bool ON_TITLE_SCREEN, ON_LEVEL1, ON_LEVEL2;
 extern short int buffer1[240][512];  // Store into front buffer
 extern short int buffer2[240][512];  // Store into back buffer
-extern int DEATH_COUNT;
+extern int DEATH_COUNT, CHEESE_COUNT;
 extern bool level1, level2;
 int OLD_COUNT1, OLD_COUNT2;
 
@@ -55,6 +56,7 @@ int main(void) {
   ON_LEVEL2 = true;
   level1 = false;
   level2 = false;
+  CHEESE_COUNT = 0;
 
   /*******************************************************************************
    *  TITLE SCREEN
@@ -208,6 +210,7 @@ int main(void) {
     prevEnemies[i] = enemies2[i]->position;
   }
 
+  CHEESE_COUNT = 0;
   point* dp1 = pointStruct(249, 53);
   point* dp2 = pointStruct(283, 159);
   point* dp3 = pointStruct(85, 185);
@@ -468,12 +471,14 @@ void configLevel1() {
   drawLevel1();
   drawDeathCounter();
   updateCount(0, 1);
+  drawCheeseCounter(4);
   wait_for_vsync();                            // Send to front
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // Get new back buffer pointer
 
   // Draw background on back buffer again to "reset" both frames
   drawLevel1();
   drawDeathCounter();
+  drawCheeseCounter(4);
   updateCount(0, 1);
 }
 
@@ -486,6 +491,7 @@ void configLevel2() {
   drawLevel2();
   drawDeathCounter();
   updateDeathCounter();
+  drawCheeseCounter(3);
   wait_for_vsync();                            // Send to front
   pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // Get new back buffer pointer
 
@@ -493,6 +499,7 @@ void configLevel2() {
   drawLevel2();
   drawDeathCounter();
   updateDeathCounter();
+  drawCheeseCounter(3);
 }
 
 void checkWin(Square* newSquare, int level, Cheese* cheeses[], int size) {
