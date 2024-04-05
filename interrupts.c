@@ -163,3 +163,21 @@ void update_LED(void) {
   if (KEY_RIGHT) *(LED_ptr) = 0x2;
   if (KEY_DOWN) *(LED_ptr) = 0x1;
 }
+
+void playAudio(int samples[], int size){
+  //initialize the audioDevice struct at the audio base address
+  audioDevice* const audioBuffer = ((audioDevice*)AUDIO_BASE);
+  int i;
+  //clear output FIFO
+  audioBuffer->control = 0x8;
+  // resume input conversion
+  audioBuffer->control = 0x0;
+  //loop across each sample
+  for (i = 0; i < size; i++) {
+    // output data if there is space in the output FIFOs
+    if ((audioBuffer->wsrc != 0) && (audioBuffer->wslc != 0)) {
+      audioBuffer->ldata = samples[i];
+      audioBuffer->rdata = samples[i];
+    }
+  }
+}

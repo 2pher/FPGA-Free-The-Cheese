@@ -39,4 +39,20 @@ void display_HEX(char b1, char b2, char b3);
  ******************************************************************************/
 void update_LED(void);
 
+//struct for audio device
+typedef struct audioDevice {
+    volatile unsigned int control;
+    volatile unsigned char rarc;
+    volatile unsigned char ralc;
+    volatile unsigned char wsrc;
+    volatile unsigned char wslc;
+    volatile unsigned int ldata;
+    volatile unsigned int rdata;
+} audioDevice;
+
+/*******************************************************************************
+ * Subroutine to play a stored audio sample
+ ******************************************************************************/
+void playAudio(int samples[], int size);
+
 #endif

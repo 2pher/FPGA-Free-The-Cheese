@@ -6,6 +6,7 @@
 #include "levels.h"
 #include "shapes.h"
 #include "title_screen.h"
+#include "audio_samples.h"
 
 /* Declare global variables */
 extern volatile int pixel_buffer_start;
