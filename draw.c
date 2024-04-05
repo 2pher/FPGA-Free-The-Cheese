@@ -179,26 +179,13 @@ void draw_circle(Circle *circle) {
       xy_plot_pixel(x, y, 0xF800);
     }
   }
-
-/*   int top = ceil(circle->position->y - circle->radius);
-  int bottom = floor(circle->position->y + circle->radius);
-
-  for (int y = top; y <= bottom; y++) {
-    int dy = y - circle->position->y;
-    float dx = sqrt(circle->radius * circle->radius - dy * dy);
-    int left = ceil(circle->position->x - dx);
-    int right = floor(circle->position->x + dx);
-    for (int x = left; x <= right; x++) {
-      xy_plot_pixel(x, y, 0xF800);
-    }
-  } */
 }
 
 void erase_circle(point *circle, int level) {
   int half_side_length = 2;
   if (level2) half_side_length = 10;
-  for (int x = circle->x - half_side_length;
-       x <= circle->x + half_side_length; x++) {
+  for (int x = circle->x - half_side_length; x <= circle->x + half_side_length;
+       x++) {
     for (int y = circle->y - half_side_length;
          y <= circle->y + half_side_length; y++) {
       if (level == 1) xy_plot_pixel(x, y, LEVEL1[y][x]);
@@ -207,26 +194,32 @@ void erase_circle(point *circle, int level) {
   }
 }
 
-//draw cheese
-void draw_cheese(Cheese* cheese){
-  int halfSideLength = cheese -> halfSideLength;
-  for (int i = 0; i < sizeof(CHEESE)/sizeof(CHEESE[0]); i++) {
-    xy_plot_pixel(CHEESE[i].x + cheese->position->x - halfSideLength, CHEESE[i].y + cheese->position->y - halfSideLength, CHEESE[i].color);
+// draw cheese
+void draw_cheese(Cheese *cheese) {
+  int halfSideLength = cheese->halfSideLength;
+  for (int i = 0; i < sizeof(CHEESE) / sizeof(CHEESE[0]); i++) {
+    xy_plot_pixel(CHEESE[i].x + cheese->position->x - halfSideLength,
+                  CHEESE[i].y + cheese->position->y - halfSideLength,
+                  CHEESE[i].color);
   }
 }
 
-void checkForCheese(Square* square, Cheese* cheese[], int size){
-  for(int i = 0; i < size; i++){
+void checkForCheese(Square *square, Cheese *cheese[], int size) {
+  for (int i = 0; i < size; i++) {
     if (!cheese[i]->collected) {
       int square_x1 = square->position->x - ((square->sideLength - 1) / 2);
       int square_x2 = square->position->x + ((square->sideLength - 1) / 2);
       int square_y1 = square->position->y - ((square->sideLength - 1) / 2);
       int square_y2 = square->position->y + ((square->sideLength - 1) / 2);
 
-      int cheese_x1 = cheese[i]->position->x - cheese[i]->halfSideLength;  // Left
-      int cheese_x2 = cheese[i]->position->x + cheese[i]->halfSideLength;  // Right
-      int cheese_y1 = cheese[i]->position->y - cheese[i]->halfSideLength;  // Top
-      int cheese_y2 = cheese[i]->position->y + cheese[i]->halfSideLength;  // Bottom
+      int cheese_x1 =
+          cheese[i]->position->x - cheese[i]->halfSideLength;  // Left
+      int cheese_x2 =
+          cheese[i]->position->x + cheese[i]->halfSideLength;  // Right
+      int cheese_y1 =
+          cheese[i]->position->y - cheese[i]->halfSideLength;  // Top
+      int cheese_y2 =
+          cheese[i]->position->y + cheese[i]->halfSideLength;  // Bottom
 
       // Check if squares have collided from any direction
       if (square_x1 <= cheese_x2 && square_x2 >= cheese_x1 &&
@@ -242,13 +235,15 @@ void checkForCheese(Square* square, Cheese* cheese[], int size){
   }
 }
 
-//erase cheese
-void erase_cheese(Cheese* cheese){
-   int halfSideLength = cheese -> halfSideLength;
-  for(int x = cheese -> position -> x - halfSideLength; x <= cheese -> position -> x + halfSideLength; x++){
-    for(int y = cheese -> position -> y - halfSideLength; y <= cheese -> position -> y + halfSideLength; y++){
-      if(level1) xy_plot_pixel(x, y, LEVEL1[y][x]);
-      if(level2) xy_plot_pixel(x, y, LEVEL2[y][x]);
+// erase cheese
+void erase_cheese(Cheese *cheese) {
+  int halfSideLength = cheese->halfSideLength;
+  for (int x = cheese->position->x - halfSideLength;
+       x <= cheese->position->x + halfSideLength; x++) {
+    for (int y = cheese->position->y - halfSideLength;
+         y <= cheese->position->y + halfSideLength; y++) {
+      if (level1) xy_plot_pixel(x, y, LEVEL1[y][x]);
+      if (level2) xy_plot_pixel(x, y, LEVEL2[y][x]);
     }
   }
 }

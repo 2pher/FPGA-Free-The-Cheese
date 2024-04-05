@@ -208,7 +208,8 @@ Circle* circleStruct(point* position, int radius, point* velocity) {
     point* vel = velocity;
     point* acc = pointStruct(0, 0);
     int hitboxRadius = radius - 2;
-    squareHitbox* newHitbox = centreSquareHitboxStruct(position, 2*hitboxRadius  - 1);
+    squareHitbox* newHitbox =
+        centreSquareHitboxStruct(position, 2 * hitboxRadius - 1);
 
     // assign values to circle
     newCircle->position = pos;
@@ -223,7 +224,7 @@ Circle* circleStruct(point* position, int radius, point* velocity) {
   return newCircle;
 }
 
-void freeCircle(Circle* circle){
+void freeCircle(Circle* circle) {
   free(circle->position);
   free(circle->velocity);
   free(circle->acceleration);
@@ -231,7 +232,7 @@ void freeCircle(Circle* circle){
   free(circle->hitbox->bottomRightPoint);
   free(circle->hitbox->topLeftPoint);
   free(circle->hitbox);
-  //loop to free path points
+  // loop to free path points
   free(circle);
 }
 
@@ -249,34 +250,6 @@ void moveCircles(Circle* circle[], int size) {
       circle[i]->position = pointStruct(circle[i]->position->x, 37);
       circle[i]->velocity = pointStruct(0, unit_velocity);
     }
-    // We need to update the circle's velocity based on boundaries
-/* 
-    if (circle[i]->velocity->x == 0 &&
-        circle[i]->velocity->y == unit_velocity) {
-      // Circle is moving down
-      if (circle[i]->position->y + half_side_length >= 202) {
-        // Circle hitting bottom boundary; bounce up
-        if(202 - circle[i]->position->y - half_side_length < 3){
-          circle[i]->velocity = pointStruct(0, -202 + circle[i]->position->y + half_side_length);
-        }else{
-          circle[i]->velocity = pointStruct(0, -unit_velocity);
-        }
-      }
-
-    } else if (circle[i]->velocity->x == 0 &&
-               circle[i]->velocity->y == -unit_velocity) {
-      // Circle is moving up
-      if (circle[i]->position->y + half_side_length <= 40) {
-        // Circle hitting bottom boundary; bounce down
-        if(circle[i]->position->y + half_side_length - 40 < 3){
-          circle[i]->velocity = pointStruct(0, circle[i]->position->y + half_side_length - 40);
-        }else{
-          circle[i]->velocity = pointStruct(0, unit_velocity);
-        }
-      }
-    }
-
-    // Update the circle's current position */
   }
 }
 
@@ -310,24 +283,23 @@ void moveCircles2(Circle* circle[], int size) {
   }
 }
 
-//coin constructor
-Cheese* cheeseStruct(point* position){
+// coin constructor
+Cheese* cheeseStruct(point* position) {
   Cheese* newCheese = malloc(sizeof(Cheese));
-  if(newCheese != NULL){
-    newCheese -> position = position;
-    newCheese -> collected = false;
-    newCheese -> erasedTwice = false;
-    newCheese -> halfSideLength = 3;
+  if (newCheese != NULL) {
+    newCheese->position = position;
+    newCheese->collected = false;
+    newCheese->erasedTwice = false;
+    newCheese->halfSideLength = 3;
   }
   return newCheese;
 }
 
-//coin destructor
-void freeCheese(Cheese* cheese){
+// coin destructor
+void freeCheese(Cheese* cheese) {
   free(cheese->position);
   free(cheese);
 }
-
 
 void checkForCollisions(Square* square, Circle* circle[], int size) {
   for (int i = 0; i < size; i++) {
@@ -364,9 +336,11 @@ bool checkBoundaryLeft(Square* square) {
   for (int y = square->position->y - half_side_length;
        y <= square->position->y + half_side_length; y++) {
     if (level1)
-      if (LEVEL1[y][square->position->x - half_side_length - 1] == 0x0000) return false;
+      if (LEVEL1[y][square->position->x - half_side_length - 1] == 0x0000)
+        return false;
     if (level2)
-      if (LEVEL2[y][square->position->x - half_side_length - 1] == 0x0000) return false;
+      if (LEVEL2[y][square->position->x - half_side_length - 1] == 0x0000)
+        return false;
   }
   return true;
 }
@@ -376,9 +350,11 @@ bool checkBoundaryRight(Square* square) {
   for (int y = square->position->y - half_side_length;
        y <= square->position->y + half_side_length; y++) {
     if (level1)
-      if (LEVEL1[y][square->position->x + half_side_length + 1] == 0x0000) return false;
+      if (LEVEL1[y][square->position->x + half_side_length + 1] == 0x0000)
+        return false;
     if (level2)
-      if (LEVEL2[y][square->position->x + half_side_length + 1] == 0x0000) return false;
+      if (LEVEL2[y][square->position->x + half_side_length + 1] == 0x0000)
+        return false;
   }
   return true;
 }
@@ -388,9 +364,11 @@ bool checkBoundaryUp(Square* square) {
   for (int x = square->position->x - half_side_length;
        x <= square->position->x + half_side_length; x++) {
     if (level1)
-      if (LEVEL1[square->position->y - half_side_length - 1][x] == 0x0000) return false;
+      if (LEVEL1[square->position->y - half_side_length - 1][x] == 0x0000)
+        return false;
     if (level2)
-      if (LEVEL2[square->position->y - half_side_length - 1][x] == 0x0000) return false;
+      if (LEVEL2[square->position->y - half_side_length - 1][x] == 0x0000)
+        return false;
   }
   return true;
 }
@@ -400,9 +378,11 @@ bool checkBoundaryDown(Square* square) {
   for (int x = square->position->x - half_side_length;
        x <= square->position->x + half_side_length; x++) {
     if (level1)
-      if (LEVEL1[square->position->y + half_side_length + 1][x] == 0x0000) return false;
+      if (LEVEL1[square->position->y + half_side_length + 1][x] == 0x0000)
+        return false;
     if (level2)
-      if (LEVEL2[square->position->y + half_side_length + 1][x] == 0x0000) return false;
+      if (LEVEL2[square->position->y + half_side_length + 1][x] == 0x0000)
+        return false;
   }
   return true;
 }
