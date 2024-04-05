@@ -138,7 +138,7 @@ int main(void) {
     draw_cheese(cheeses[i]);
   }
 
-  *(timer_ptr + 1) = 0x7;  // STOP = 0, START = 0, CONT = 1, ITO = 1
+  *(timer_ptr + 1) = 0x7;  // STOP = 0, START = 1, CONT = 1, ITO = 1
 
   // Level 1 main loop
   while (ON_LEVEL1) {
@@ -512,7 +512,7 @@ void configLevel2() {
   drawDeathCounter();
   updateDeathCounter();
   drawCheeseCounter(3);
-  drawLevelCount(3);
+  drawLevelCount(2);
 }
 
 void checkWin(Square* newSquare, int level, Cheese* cheeses[], int size) {

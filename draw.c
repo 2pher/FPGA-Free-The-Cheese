@@ -1,10 +1,11 @@
 #include "draw.h"
+
 #include "audio_samples.h"
 
 extern volatile int pixel_buffer_start;
 extern bool level1, level2;
 extern int CHEESE_COUNT;
-extern audioDevice* audioBuffer;
+extern audioDevice *audioBuffer;
 extern int centiseconds, seconds, minutes;
 extern int old_seconds, old_minutes;
 
@@ -222,6 +223,7 @@ void checkForCheese(Square *square, Cheese *cheese[], int size) {
       }
     } else if (cheese[i]->collected && !cheese[i]->erasedTwice) {
       erase_cheese(cheese[i]);
+      updateCheeseCounter();
       cheese[i]->erasedTwice = true;
     }
   }
@@ -264,15 +266,15 @@ void drawLevelCount(int count) {
 
   if (count == 1) {
     for (int i = 0; i < sizeof(NUM_1) / sizeof(NUM_1[0]); i++) {
-      xy_plot_pixel(NUM_1[i].x + 266, NUM_1[i].y + 7, 0xFFFF);
+      xy_plot_pixel(NUM_1[i].x + 272, NUM_1[i].y + 7, 0xFFFF);
     }
   } else if (count == 2) {
     for (int i = 0; i < sizeof(NUM_2) / sizeof(NUM_2[0]); i++) {
-      xy_plot_pixel(NUM_2[i].x + 266, NUM_2[i].y + 7, 0xFFFF);
+      xy_plot_pixel(NUM_2[i].x + 272, NUM_2[i].y + 7, 0xFFFF);
     }
   } else if (count == 3) {
     for (int i = 0; i < sizeof(NUM_3) / sizeof(NUM_3[0]); i++) {
-      xy_plot_pixel(NUM_3[i].x + 266, NUM_3[i].y + 7, 0xFFFF);
+      xy_plot_pixel(NUM_3[i].x + 272, NUM_3[i].y + 7, 0xFFFF);
     }
   }
 }
@@ -286,20 +288,20 @@ void drawCheeseCounter(int max_count) {
 
   // Draw 0/(max_count)
   for (int i = 0; i < sizeof(NUM_0) / sizeof(NUM_0[0]); i++) {
-    xy_plot_pixel(19 + NUM_0[i].x, 220 + NUM_0[i].y, 0xFFFF);
+    xy_plot_pixel(23 + NUM_0[i].x, 220 + NUM_0[i].y, 0xFFFF);
   }
 
   for (int i = 0; i < sizeof(SLASH) / sizeof(SLASH[0]); i++) {
-    xy_plot_pixel(31 + SLASH[i].x, 220 + SLASH[i].y, 0xFFFF);
+    xy_plot_pixel(35 + SLASH[i].x, 220 + SLASH[i].y, 0xFFFF);
   }
 
   if (max_count == 3) {
     for (int i = 0; i < sizeof(NUM_3) / sizeof(NUM_3); i++) {
-      xy_plot_pixel(43 + NUM_3[i].x, 220 + NUM_3[i].y, 0xFFFF);
+      xy_plot_pixel(47 + NUM_3[i].x, 220 + NUM_3[i].y, 0xFFFF);
     }
   } else if (max_count == 4) {
     for (int i = 0; i < sizeof(NUM_4) / sizeof(NUM_4); i++) {
-      xy_plot_pixel(43 + NUM_4[i].x, 220 + NUM_4[i].y, 0xFFFF);
+      xy_plot_pixel(47 + NUM_4[i].x, 220 + NUM_4[i].y, 0xFFFF);
     }
   }
 }
@@ -307,25 +309,25 @@ void drawCheeseCounter(int max_count) {
 void updateCheeseCounter() {
   for (int x = 0; x < 12; x++) {
     for (int y = 0; y < 10; y++) {
-      xy_plot_pixel(31 + x, 220 + y, LEVEL1[220 + y][31 + x]);
+      xy_plot_pixel(23 + x, 220 + y, LEVEL1[220 + y][31 + x]);
     }
   }
 
   if (CHEESE_COUNT == 1) {
     for (int i = 0; i < sizeof(NUM_1) / sizeof(NUM_1[0]); i++) {
-      xy_plot_pixel(19 + NUM_1[i].x, 220 + NUM_1[i].y, 0xFFFF);
+      xy_plot_pixel(23 + NUM_1[i].x, 220 + NUM_1[i].y, 0xFFFF);
     }
   } else if (CHEESE_COUNT == 2) {
     for (int i = 0; i < sizeof(NUM_2) / sizeof(NUM_2[0]); i++) {
-      xy_plot_pixel(19 + NUM_2[i].x, 220 + NUM_2[i].y, 0xFFFF);
+      xy_plot_pixel(23 + NUM_2[i].x, 220 + NUM_2[i].y, 0xFFFF);
     }
   } else if (CHEESE_COUNT == 3) {
     for (int i = 0; i < sizeof(NUM_3) / sizeof(NUM_3[0]); i++) {
-      xy_plot_pixel(19 + NUM_3[i].x, 220 + NUM_3[i].y, 0xFFFF);
+      xy_plot_pixel(23 + NUM_3[i].x, 220 + NUM_3[i].y, 0xFFFF);
     }
   } else if (CHEESE_COUNT == 4) {
     for (int i = 0; i < sizeof(NUM_4) / sizeof(NUM_4[0]); i++) {
-      xy_plot_pixel(19 + NUM_4[i].x, 220 + NUM_4[i].y, 0xFFFF);
+      xy_plot_pixel(23 + NUM_4[i].x, 220 + NUM_4[i].y, 0xFFFF);
     }
   }
 }
@@ -372,7 +374,7 @@ void updateTimer() {
   // Reset centiseconds
   for (int x = 0; x < 24; x++) {
     for (int y = 0; y < 10; y++) {
-      xy_plot_pixel(288 + x, 222 + y, LEVEL1[288 + y][222 + x]);
+      xy_plot_pixel(288 + x, 220 + y, LEVEL1[288 + y][220 + x]);
     }
   }
 
@@ -572,8 +574,6 @@ void updateTimer() {
         xy_plot_pixel(252 + NUM_9[i].x, 220 + NUM_9[i].y, 0xFFFF);
       }
     }
-
-    old_seconds = seconds;
   }
 
   if (old_minutes != minutes) {
@@ -666,8 +666,5 @@ void updateTimer() {
         xy_plot_pixel(216 + NUM_9[i].x, 220 + NUM_9[i].y, 0xFFFF);
       }
     }
-
-    old_minutes = minutes;
   }
 }
-
