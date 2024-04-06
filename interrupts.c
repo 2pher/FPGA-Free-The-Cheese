@@ -1,14 +1,14 @@
 #include "interrupts.h"
-#include "audio_samples.h"
 
+#include "audio_samples.h"
 #include "globalHeader.h"
 
 /* Declare global variables */
 extern volatile char byte1, byte2, byte3;
 extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT;
-extern bool ON_TITLE_SCREEN;
+extern bool ON_TITLE_SCREEN, END_SCREEN;
 extern int centiseconds, seconds, minutes;
-extern audioDevice* audioBuffer;
+extern audioDevice *audioBuffer;
 
 /*******************************************************************************
  * Global interrupt enabler for board
@@ -41,9 +41,9 @@ void configTimer(void) {
 /*******************************************************************************
  * Sets address of audio device
  ******************************************************************************/
-void configAudioDevice(void){
-   //initialize the audioDevice struct at the audio base address
-  audioBuffer = ((audioDevice*)AUDIO_BASE);
+void configAudioDevice(void) {
+  // initialize the audioDevice struct at the audio base address
+  audioBuffer = ((audioDevice *)AUDIO_BASE);
 }
 
 /*******************************************************************************
@@ -73,6 +73,11 @@ void PS2_ISR(void) {
 
     if (ON_TITLE_SCREEN && break_code && byte3 == (char)0x29) {
       ON_TITLE_SCREEN = false;
+      playAudio(NEXTLEVEL, NEXTLEVEL_SOUND);
+    }
+
+    if (END_SCREEN && break_code && byte3 == (char)0x29) {
+      END_SCREEN = false;
       playAudio(NEXTLEVEL, NEXTLEVEL_SOUND);
     }
 
@@ -184,11 +189,11 @@ void playAudio(int samples[], int whichSound) {
   int size = -1;
   if (whichSound == TEST_SOUND) {
     size = 8932;  // wilhelm sound
-  }else if(whichSound == CHEESE_SOUND){
+  } else if (whichSound == CHEESE_SOUND) {
     size = 5067;
-  }else if(whichSound == NEXTLEVEL_SOUND){
+  } else if (whichSound == NEXTLEVEL_SOUND) {
     size = 18309;
-  }else if(whichSound == DEATH_SOUND){
+  } else if (whichSound == DEATH_SOUND) {
     size = 5232;
   } else {
     return;
@@ -200,7 +205,8 @@ void playAudio(int samples[], int whichSound) {
   // loop across each sample
   for (i = 0; i < size; i++) {
     // output data if there is space in the output FIFOs
-    while (audioBuffer->wsrc == 0);
+    while (audioBuffer->wsrc == 0)
+      ;
     audioBuffer->ldata = samples[i];
     audioBuffer->rdata = samples[i];
   }

@@ -1,10 +1,11 @@
 #include "shapes.h"
 
 #include "audio_samples.h"
+#include "interrupts.h"
 
 extern bool KEY_UP, KEY_DOWN, KEY_RIGHT, KEY_LEFT;
 extern int DEATH_COUNT;
-extern bool level1, level2, level3;
+extern bool level1, level2, level3, dead;
 
 // square 'constructor'
 Square* squareStruct(point* pos, int sideLength) {
@@ -286,7 +287,7 @@ void moveCircles2(Circle* circle[], int size) {
 }
 
 void moveCircles3(Circle* circle[], int size) {
-  int unit_velocity = 2;
+  int unit_velocity = 3;
   int velocity_y = 1;
   int half_side_length = 3;
   for (int i = 0; i < size; i++) {
@@ -341,9 +342,9 @@ void freeCheese(Cheese* cheese) {
 void checkForCollisions(Square* square, Circle* circle[], int size) {
   for (int i = 0; i < size; i++) {
     if (collided(square, circle[i])) {
-      square->position = square->respawn;
       DEATH_COUNT++;
-      playAudio(DEATH, DEATH_SOUND);
+      dead = true;
+      return;
     }
   }
 }
@@ -431,7 +432,7 @@ bool checkBoundaryDown(Square* square) {
       if (LEVEL2[square->position->y + half_side_length + 1][x] == 0x0000)
         return false;
     if (level3)
-     if (LEVEL3[square->position->y + half_side_length + 1][x] == 0x0000)
+      if (LEVEL3[square->position->y + half_side_length + 1][x] == 0x0000)
         return false;
   }
   return true;

@@ -19,6 +19,7 @@ void drawMouse(int mouse, bool draw);
 void drawLevel1();
 void drawLevel2();
 void drawLevel3();
+void drawFinal();
 
 // clear screen
 void clear_screen();

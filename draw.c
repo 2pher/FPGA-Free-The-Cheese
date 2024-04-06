@@ -77,6 +77,18 @@ void drawLevel3() {
   }
 }
 
+void drawFinal() {
+  for (int x = 0; x < 320; x++) {
+    for (int y = 0; y < 240; y++) {
+      if (x == 0 || x == 1) {
+        xy_plot_pixel(x, y, 0x0000);
+      } else {
+        xy_plot_pixel(x, y, FINAL[y][x]);
+      }
+    }
+  }
+}
+
 // clear screen
 void clear_screen() {
   for (int x = 0; x < 320; x++) {
@@ -337,7 +349,11 @@ void updateCheeseCounter() {
     }
   }
 
-  if (CHEESE_COUNT == 1) {
+  if (CHEESE_COUNT == 0) {
+    for (int i = 0; i < sizeof(NUM_0) / sizeof(NUM_0[0]); i++) {
+      xy_plot_pixel(25 + NUM_0[i].x, 220 + NUM_0[i].y, 0xFFFF);
+    }
+  } else if (CHEESE_COUNT == 1) {
     for (int i = 0; i < sizeof(NUM_1) / sizeof(NUM_1[0]); i++) {
       xy_plot_pixel(25 + NUM_1[i].x, 220 + NUM_1[i].y, 0xFFFF);
     }

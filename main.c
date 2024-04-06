@@ -14,12 +14,13 @@ extern bool ON_TITLE_SCREEN, ON_LEVEL1, ON_LEVEL2, ON_LEVEL3;
 extern short int buffer1[240][512];  // Store into front buffer
 extern short int buffer2[240][512];  // Store into back buffer
 extern int DEATH_COUNT, CHEESE_COUNT;
-extern bool level1, level2, level3;
+extern bool level1, level2, level3, dead, END_SCREEN;
 int OLD_COUNT1, OLD_COUNT2;
 extern int centiseconds, seconds, minutes;
 extern int old_seconds, old_minutes;
 extern audioDevice* audioBuffer;
 int prev_seconds, prev_minutes;
+bool dead2;
 
 /* Function prototypes */
 void configVGA(void);
@@ -31,6 +32,7 @@ void updateCount(int, int);
 void configLevel1(void);
 void configLevel2(void);
 void configLevel3(void);
+void configEndScreen(void);
 void checkWin(Square*, int, Cheese*[], int);
 
 /*******************************************************************************
@@ -62,6 +64,7 @@ int main(void) {
   ON_LEVEL1 = true;
   ON_LEVEL2 = true;
   ON_LEVEL3 = true;
+  END_SCREEN = false;
   level1 = false;
   level2 = false;
   level3 = false;
@@ -71,6 +74,8 @@ int main(void) {
   minutes = 0;
   old_seconds = 0;
   old_minutes = 0;
+  dead = false;
+  dead2 = false;
 
   /*******************************************************************************
    *  TITLE SCREEN
@@ -80,333 +85,422 @@ int main(void) {
     updateTitleScreen();
   }
 
-  /*******************************************************************************
-   *  LEVEL 1
-   ******************************************************************************/
-  configLevel1();  // Print new background and level on both buffer frames
-  level1 = true;
+  while (1) {
+    /*******************************************************************************
+     *  LEVEL 1
+     ******************************************************************************/
+    configLevel1();  // Print new background and level on both buffer frames
+    level1 = true;
 
-  // Initialize starting square
-  point* initialLocation = pointStruct(42, 115);
-  Square* newSquare = squareStruct(initialLocation, 9);
-  point* oldSquare;
-  point* prevSquare;
-  prevSquare = newSquare->position;
-  oldSquare = newSquare->position;
-
-  // Initialize all of the bots, create an array of them
-  point* p1 = pointStruct(76, 45);
-  point* p2 = pointStruct(140, 45);
-  point* p3 = pointStruct(204, 45);
-  point* p4 = pointStruct(108, 202);
-  point* p5 = pointStruct(172, 202);
-  point* p6 = pointStruct(236, 202);
-  point* down = pointStruct(0, 3);
-  point* up = pointStruct(0, -3);
-  point* up2 = pointStruct(0, -1);
-  point* down2 = pointStruct(0, 1);
-  point* left = pointStruct(-2, 0);
-  point* right = pointStruct(2, 0);
-
-  Circle* e1 = circleStruct(p1, 3, down);
-  Circle* e2 = circleStruct(p2, 3, down);
-  Circle* e3 = circleStruct(p3, 3, down);
-  Circle* e4 = circleStruct(p4, 3, up);
-  Circle* e5 = circleStruct(p5, 3, up);
-  Circle* e6 = circleStruct(p6, 3, up);
-  Circle* enemies[] = {e1, e2, e3, e4, e5, e6};
-
-  point* oldEnemies[14];
-  point* prevEnemies[14];
-  for (int i = 0; i < 6; i++) {
-    prevEnemies[i] = enemies[i]->position;
-    oldEnemies[i] = enemies[i]->position;
-  }
-
-  point* cp1 = pointStruct(59, 39);
-  point* cp2 = pointStruct(262, 39);
-  point* cp3 = pointStruct(262, 191);
-  point* cp4 = pointStruct(59, 191);
-
-  Cheese* c1 = cheeseStruct(cp1);
-  Cheese* c2 = cheeseStruct(cp2);
-  Cheese* c3 = cheeseStruct(cp3);
-  Cheese* c4 = cheeseStruct(cp4);
-
-  Cheese* cheeses[] = {c1, c2, c3, c4};
-  for (int i = 0; i < 4; i++) {
-    draw_cheese(cheeses[i]);
-  }
-  wait_for_vsync();
-  pixel_buffer_start = *(pixel_ctrl_ptr + 1);
-  for (int i = 0; i < 4; i++) {
-    draw_cheese(cheeses[i]);
-  }
-
-  *(timer_ptr + 1) = 0x7;  // STOP = 0, START = 1, CONT = 1, ITO = 1
-
-  // Level 1 main loop
-  while (ON_LEVEL1) {
-    // Calculate position
-    moveSquareNoAcc(newSquare);
-    // Calculate position of each enemy
-    moveCircles(enemies, 6);
-    // Check for any collisions
-    checkForCollisions(newSquare, enemies, 6);
-    // Check if we collected THE CHEESE!
-    checkForCheese(newSquare, cheeses, 4);
-    // Check if won
-    checkWin(newSquare, 1, cheeses, 4);
-    // Erase player square if necessary
-    erase_player_square(oldSquare, newSquare, 1);
-    // Erase old circle positions, draw new ones
-    drawCircles(enemies, oldEnemies, 6, 1);
-    // Draw player's current position
-    draw_player_square(newSquare);
-
-    // Update oldSquare position
-    oldSquare = prevSquare;
+    // Initialize starting square
+    point* initialLocation = pointStruct(42, 115);
+    Square* newSquare = squareStruct(initialLocation, 9);
+    point* oldSquare;
+    point* prevSquare;
     prevSquare = newSquare->position;
+    oldSquare = newSquare->position;
 
-    // Update circle positions
+    // Initialize all of the bots, create an array of them
+    point* p1 = pointStruct(76, 45);
+    point* p2 = pointStruct(140, 45);
+    point* p3 = pointStruct(204, 45);
+    point* p4 = pointStruct(108, 202);
+    point* p5 = pointStruct(172, 202);
+    point* p6 = pointStruct(236, 202);
+    point* down = pointStruct(0, 3);
+    point* up = pointStruct(0, -3);
+    point* up2 = pointStruct(0, -1);
+    point* down2 = pointStruct(0, 1);
+    point* left = pointStruct(-3, 0);
+    point* right = pointStruct(3, 0);
+
+    Circle* e1 = circleStruct(p1, 3, down);
+    Circle* e2 = circleStruct(p2, 3, down);
+    Circle* e3 = circleStruct(p3, 3, down);
+    Circle* e4 = circleStruct(p4, 3, up);
+    Circle* e5 = circleStruct(p5, 3, up);
+    Circle* e6 = circleStruct(p6, 3, up);
+    Circle* enemies[] = {e1, e2, e3, e4, e5, e6};
+
+    point* oldEnemies[14];
+    point* prevEnemies[14];
     for (int i = 0; i < 6; i++) {
-      oldEnemies[i] = prevEnemies[i];
       prevEnemies[i] = enemies[i]->position;
+      oldEnemies[i] = enemies[i]->position;
     }
 
-    updateTimer();
-    old_minutes = prev_minutes;
-    old_seconds = prev_seconds;
-    prev_minutes = minutes;
-    prev_seconds = seconds;
-    display_HEX(byte1, byte2, byte3);
-    update_LED();
+    point* cp1 = pointStruct(59, 39);
+    point* cp2 = pointStruct(262, 39);
+    point* cp3 = pointStruct(262, 191);
+    point* cp4 = pointStruct(59, 191);
 
-    // Update death counter if necessary
-    updateDeathCounter();
+    Cheese* c1 = cheeseStruct(cp1);
+    Cheese* c2 = cheeseStruct(cp2);
+    Cheese* c3 = cheeseStruct(cp3);
+    Cheese* c4 = cheeseStruct(cp4);
 
+    Cheese* cheeses[] = {c1, c2, c3, c4};
+    for (int i = 0; i < 4; i++) {
+      draw_cheese(cheeses[i]);
+    }
     wait_for_vsync();
     pixel_buffer_start = *(pixel_ctrl_ptr + 1);
-  }
+    for (int i = 0; i < 4; i++) {
+      draw_cheese(cheeses[i]);
+    }
 
-  // End of level 1; deallocate all pointers
-  level1 = false;
+    *(timer_ptr + 1) = 0x7;  // STOP = 0, START = 1, CONT = 1, ITO = 1
 
-  /*******************************************************************************
-   *  LEVEL 2
-   ******************************************************************************/
-  configLevel2();
-  playAudio(NEXTLEVEL, NEXTLEVEL_SOUND);
-  level2 = true;
+    // Level 1 main loop
+    while (ON_LEVEL1) {
+      // Calculate position
+      moveSquareNoAcc(newSquare);
+      // Calculate position of each enemy
+      moveCircles(enemies, 6);
+      // Check for any collisions
+      checkForCollisions(newSquare, enemies, 6);
+      // Check if we collected THE CHEESE!
+      checkForCheese(newSquare, cheeses, 4);
+      // Check if won
+      checkWin(newSquare, 1, cheeses, 4);
+      // Erase player square if necessary
+      erase_player_square(oldSquare, newSquare, 1);
+      // Erase old circle positions, draw new ones
+      drawCircles(enemies, oldEnemies, 6, 1);
+      // Draw player's current position
+      draw_player_square(newSquare);
 
-  // Initialize starting square
-  point* initialLocation2 = pointStruct(33, 80);
-  Square* newSquare2 = squareStruct(initialLocation2, 9);
-  prevSquare = newSquare2->position;
-  oldSquare = newSquare2->position;
+      // Update oldSquare position
+      oldSquare = prevSquare;
+      prevSquare = newSquare->position;
 
-  // Initialize all of the bots, create an array of them
-  point* q1 = pointStruct(72, 125);
-  point* q2 = pointStruct(72, 135);
-  point* q3 = pointStruct(72, 145);
-  point* q4 = pointStruct(72, 155);
-  point* q5 = pointStruct(80, 157);
-  point* q6 = pointStruct(90, 157);
-  point* q7 = pointStruct(100, 157);
-  point* q8 = pointStruct(110, 157);
-  point* q9 = pointStruct(120, 157);
-  point* q10 = pointStruct(130, 157);
+      if (dead2) {
+        dead2 = false;
+        updateCheeseCounter();
+        for (int i = 0; i < 4; i++) {
+          draw_cheese(cheeses[i]);
+        }
+      }
 
-  Circle* f1 = circleStruct(q1, 11, up);
-  Circle* f2 = circleStruct(q2, 11, up);
-  Circle* f3 = circleStruct(q3, 11, up);
-  Circle* f4 = circleStruct(q4, 11, up);
-  Circle* f5 = circleStruct(q5, 11, left);
-  Circle* f6 = circleStruct(q6, 11, left);
-  Circle* f7 = circleStruct(q7, 11, left);
-  Circle* f8 = circleStruct(q8, 11, left);
-  Circle* f9 = circleStruct(q9, 11, left);
-  Circle* f10 = circleStruct(q10, 11, left);
-  Circle* enemies2[] = {f1, f2, f3, f4, f5, f6, f7, f8, f9, f10};
+      if (dead) {
+        newSquare->position = newSquare->respawn;
+        playAudio(DEATH, DEATH_SOUND);
+        dead = false;
+        dead2 = true;
+        CHEESE_COUNT = 0;
+        updateCheeseCounter();
+        for (int i = 0; i < 4; i++) {
+          cheeses[i]->collected = false;
+          cheeses[i]->erasedTwice = false;
+          draw_cheese(cheeses[i]);
+        }
+      }
 
-  for (int i = 0; i < 10; i++) {
-    oldEnemies[i] = enemies2[i]->position;
-    prevEnemies[i] = enemies2[i]->position;
-  }
+      // Update circle positions
+      for (int i = 0; i < 6; i++) {
+        oldEnemies[i] = prevEnemies[i];
+        prevEnemies[i] = enemies[i]->position;
+      }
 
-  CHEESE_COUNT = 0;
-  point* dp1 = pointStruct(251, 53);
-  point* dp2 = pointStruct(283, 157);
-  point* dp3 = pointStruct(72, 185);
+      updateTimer();
+      old_minutes = prev_minutes;
+      old_seconds = prev_seconds;
+      prev_minutes = minutes;
+      prev_seconds = seconds;
+      display_HEX(byte1, byte2, byte3);
+      update_LED();
 
-  Cheese* d1 = cheeseStruct(dp1);
-  Cheese* d2 = cheeseStruct(dp2);
-  Cheese* d3 = cheeseStruct(dp3);
+      // Update death counter if necessary
+      updateDeathCounter();
 
-  Cheese* cheeses2[] = {d1, d2, d3};
-  for (int i = 0; i < 3; i++) {
-    draw_cheese(cheeses2[i]);
-  }
-  wait_for_vsync();
-  pixel_buffer_start = *(pixel_ctrl_ptr + 1);
-  for (int i = 0; i < 3; i++) {
-    draw_cheese(cheeses2[i]);
-  }
+      wait_for_vsync();
+      pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+    }
 
-  while (ON_LEVEL2) {
-    // Calculate position
-    moveSquareNoAcc(newSquare2);
-    // Calculate position of each enemy
-    moveCircles2(enemies2, 10);
-    // Check for any collisions
-    checkForCollisions(newSquare2, enemies2, 10);
-    // Check for the CHEESE!
-    checkForCheese(newSquare2, cheeses2, 3);
-    // Check if won
-    checkWin(newSquare, 2, cheeses2, 3);
-    // Erase player square if necessary
-    erase_player_square(oldSquare, newSquare2, 2);
-    // Erase old circle positions, draw new ones
-    drawCircles(enemies2, oldEnemies, 10, 2);
-    // Draw player's current position
-    draw_player_square(newSquare2);
+    // End of level 1; deallocate all pointers
+    level1 = false;
 
-    // Update oldSquare position
-    oldSquare = prevSquare;
+    /*******************************************************************************
+     *  LEVEL 2
+     ******************************************************************************/
+    configLevel2();
+    level2 = true;
+
+    // Initialize starting square
+    point* initialLocation2 = pointStruct(33, 80);
+    Square* newSquare2 = squareStruct(initialLocation2, 9);
     prevSquare = newSquare2->position;
+    oldSquare = newSquare2->position;
 
-    // Update circle positions
+    // Initialize all of the bots, create an array of them
+    point* q1 = pointStruct(72, 125);
+    point* q2 = pointStruct(72, 135);
+    point* q3 = pointStruct(72, 145);
+    point* q4 = pointStruct(72, 155);
+    point* q5 = pointStruct(80, 157);
+    point* q6 = pointStruct(90, 157);
+    point* q7 = pointStruct(100, 157);
+    point* q8 = pointStruct(110, 157);
+    point* q9 = pointStruct(120, 157);
+    point* q10 = pointStruct(130, 157);
+
+    Circle* f1 = circleStruct(q1, 11, up);
+    Circle* f2 = circleStruct(q2, 11, up);
+    Circle* f3 = circleStruct(q3, 11, up);
+    Circle* f4 = circleStruct(q4, 11, up);
+    Circle* f5 = circleStruct(q5, 11, left);
+    Circle* f6 = circleStruct(q6, 11, left);
+    Circle* f7 = circleStruct(q7, 11, left);
+    Circle* f8 = circleStruct(q8, 11, left);
+    Circle* f9 = circleStruct(q9, 11, left);
+    Circle* f10 = circleStruct(q10, 11, left);
+    Circle* enemies2[] = {f1, f2, f3, f4, f5, f6, f7, f8, f9, f10};
+
     for (int i = 0; i < 10; i++) {
-      oldEnemies[i] = prevEnemies[i];
+      oldEnemies[i] = enemies2[i]->position;
       prevEnemies[i] = enemies2[i]->position;
     }
 
-    updateTimer();
-    old_minutes = prev_minutes;
-    old_seconds = prev_seconds;
-    prev_minutes = minutes;
-    prev_seconds = seconds;
-    display_HEX(byte1, byte2, byte3);
-    update_LED();
+    CHEESE_COUNT = 0;
+    point* dp1 = pointStruct(251, 53);
+    point* dp2 = pointStruct(283, 157);
+    point* dp3 = pointStruct(72, 185);
 
-    // Update death counter if necessary
-    updateDeathCounter();
+    Cheese* d1 = cheeseStruct(dp1);
+    Cheese* d2 = cheeseStruct(dp2);
+    Cheese* d3 = cheeseStruct(dp3);
 
+    Cheese* cheeses2[] = {d1, d2, d3};
+    for (int i = 0; i < 3; i++) {
+      draw_cheese(cheeses2[i]);
+    }
     wait_for_vsync();
     pixel_buffer_start = *(pixel_ctrl_ptr + 1);
-  }
-  level2 = false;
+    for (int i = 0; i < 3; i++) {
+      draw_cheese(cheeses2[i]);
+    }
+    playAudio(NEXTLEVEL, NEXTLEVEL_SOUND);
+    while (ON_LEVEL2) {
+      // Calculate position
+      moveSquareNoAcc(newSquare2);
+      // Calculate position of each enemy
+      moveCircles2(enemies2, 10);
+      // Check for any collisions
+      checkForCollisions(newSquare2, enemies2, 10);
+      // Check for the CHEESE!
+      checkForCheese(newSquare2, cheeses2, 3);
+      // Check if won
+      checkWin(newSquare, 2, cheeses2, 3);
+      // Erase player square if necessary
+      erase_player_square(oldSquare, newSquare2, 2);
+      // Erase old circle positions, draw new ones
+      drawCircles(enemies2, oldEnemies, 10, 2);
+      // Draw player's current position
+      draw_player_square(newSquare2);
 
-  /*******************************************************************************
-   *  LEVEL 3
-   ******************************************************************************/
-  configLevel3();
-  playAudio(NEXTLEVEL, NEXTLEVEL_SOUND);
-  level3 = true;
+      // Update oldSquare position
+      oldSquare = prevSquare;
+      prevSquare = newSquare2->position;
 
-  // Initialize starting square
-  point* initialLocation3 = pointStruct(41, 123);
-  Square* newSquare3 = squareStruct(initialLocation3, 9);
-  prevSquare = newSquare3->position;
-  oldSquare = newSquare3->position;
+      if (dead2) {
+        dead2 = false;
+        updateCheeseCounter();
+        for (int i = 0; i < 3; i++) {
+          draw_cheese(cheeses2[i]);
+        }
+      }
 
-  // Initialize all of the bots, create an array of them
-  point* r1 = pointStruct(62, 63);
-  point* r2 = pointStruct(75, 63);
-  point* r3 = pointStruct(123, 182);
-  point* r4 = pointStruct(136, 182);
-  point* r5 = pointStruct(183, 63);
-  point* r6 = pointStruct(196, 63);
-  point* r7 = pointStruct(244, 182);
-  point* r8 = pointStruct(257, 182);
-  point* r9 = pointStruct(57, 70);
-  point* r10 = pointStruct(57, 82);
-  point* r11 = pointStruct(57, 94);
-  point* r12 = pointStruct(266, 151);
-  point* r13 = pointStruct(266, 163);
-  point* r14 = pointStruct(266, 175);
+      if (dead) {
+        newSquare2->position = newSquare2->respawn;
+        playAudio(DEATH, DEATH_SOUND);
+        dead = false;
+        dead2 = true;
+        CHEESE_COUNT = 0;
+        updateCheeseCounter();
+        for (int i = 0; i < 3; i++) {
+          cheeses2[i]->collected = false;
+          cheeses2[i]->erasedTwice = false;
+          draw_cheese(cheeses2[i]);
+        }
+      }
 
-  Circle* g1 = circleStruct(r1, 3, down2);
-  Circle* g2 = circleStruct(r2, 3, down2);
-  Circle* g3 = circleStruct(r3, 3, up2);
-  Circle* g4 = circleStruct(r4, 3, up2);
-  Circle* g5 = circleStruct(r5, 3, down2);
-  Circle* g6 = circleStruct(r6, 3, down2);
-  Circle* g7 = circleStruct(r7, 3, up2);
-  Circle* g8 = circleStruct(r8, 3, up2);
-  Circle* g9 = circleStruct(r9, 3, right);
-  Circle* g10 = circleStruct(r10, 3, right);
-  Circle* g11 = circleStruct(r11, 3, right);
-  Circle* g12 = circleStruct(r12, 3, left);
-  Circle* g13 = circleStruct(r13, 3, left);
-  Circle* g14 = circleStruct(r14, 3, left);
-  Circle* enemies3[] = {g1, g2, g3,  g4,  g5,  g6,  g7,
-                        g8, g9, g10, g11, g12, g13, g14};
+      // Update circle positions
+      for (int i = 0; i < 10; i++) {
+        oldEnemies[i] = prevEnemies[i];
+        prevEnemies[i] = enemies2[i]->position;
+      }
 
-  for (int i = 0; i < 14; i++) {
-    oldEnemies[i] = enemies3[i]->position;
-    prevEnemies[i] = enemies3[i]->position;
-  }
+      updateTimer();
+      old_minutes = prev_minutes;
+      old_seconds = prev_seconds;
+      prev_minutes = minutes;
+      prev_seconds = seconds;
+      display_HEX(byte1, byte2, byte3);
+      update_LED();
 
-  CHEESE_COUNT = 0;
-  point* ep1 = pointStruct(100, 54);
-  point* ep2 = pointStruct(220, 54);
+      // Update death counter if necessary
+      updateDeathCounter();
 
-  Cheese* e11 = cheeseStruct(ep1);
-  Cheese* e12 = cheeseStruct(ep2);
+      wait_for_vsync();
+      pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+    }
+    level2 = false;
 
-  Cheese* cheeses3[] = {e11, e12};
-  for (int i = 0; i < 2; i++) {
-    draw_cheese(cheeses3[i]);
-  }
-  wait_for_vsync();
-  pixel_buffer_start = *(pixel_ctrl_ptr + 1);
-  for (int i = 0; i < 2; i++) {
-    draw_cheese(cheeses3[i]);
-  }
+    /*******************************************************************************
+     *  LEVEL 3
+     ******************************************************************************/
+    configLevel3();
+    level3 = true;
 
-  // Level 3 main loop
-  while (ON_LEVEL3) {
-    // Calculate position
-    moveSquareNoAcc(newSquare3);
-    // Calculate position of each enemy
-    moveCircles3(enemies3, 14);
-    // Check for any collisions
-    checkForCollisions(newSquare3, enemies3, 14);
-    // Check if we collected THE CHEESE!
-    checkForCheese(newSquare3, cheeses3, 2);
-    // Check if won
-    // checkWin(newSquare3, 3, cheeses3, 2);
-    // Erase player square if necessary
-    erase_player_square(oldSquare, newSquare3, 3);
-    // Erase old circle positions, draw new ones
-    drawCircles(enemies3, oldEnemies, 14, 3);
-    // Draw player's current position
-    draw_player_square(newSquare3);
-
-    // Update oldSquare position
-    oldSquare = prevSquare;
+    // Initialize starting square
+    point* initialLocation3 = pointStruct(41, 123);
+    Square* newSquare3 = squareStruct(initialLocation3, 9);
     prevSquare = newSquare3->position;
+    oldSquare = newSquare3->position;
 
-    // Update circle positions
+    // Initialize all of the bots, create an array of them
+    point* r1 = pointStruct(62, 63);
+    point* r2 = pointStruct(75, 63);
+    point* r3 = pointStruct(123, 182);
+    point* r4 = pointStruct(136, 182);
+    point* r5 = pointStruct(183, 63);
+    point* r6 = pointStruct(196, 63);
+    point* r7 = pointStruct(244, 182);
+    point* r8 = pointStruct(257, 182);
+    point* r9 = pointStruct(57, 70);
+    point* r10 = pointStruct(57, 82);
+    point* r11 = pointStruct(57, 94);
+    point* r12 = pointStruct(266, 151);
+    point* r13 = pointStruct(266, 163);
+    point* r14 = pointStruct(266, 175);
+
+    Circle* g1 = circleStruct(r1, 3, down2);
+    Circle* g2 = circleStruct(r2, 3, down2);
+    Circle* g3 = circleStruct(r3, 3, up2);
+    Circle* g4 = circleStruct(r4, 3, up2);
+    Circle* g5 = circleStruct(r5, 3, down2);
+    Circle* g6 = circleStruct(r6, 3, down2);
+    Circle* g7 = circleStruct(r7, 3, up2);
+    Circle* g8 = circleStruct(r8, 3, up2);
+    Circle* g9 = circleStruct(r9, 3, right);
+    Circle* g10 = circleStruct(r10, 3, right);
+    Circle* g11 = circleStruct(r11, 3, right);
+    Circle* g12 = circleStruct(r12, 3, left);
+    Circle* g13 = circleStruct(r13, 3, left);
+    Circle* g14 = circleStruct(r14, 3, left);
+    Circle* enemies3[] = {g1, g2, g3,  g4,  g5,  g6,  g7,
+                          g8, g9, g10, g11, g12, g13, g14};
+
     for (int i = 0; i < 14; i++) {
-      oldEnemies[i] = prevEnemies[i];
+      oldEnemies[i] = enemies3[i]->position;
       prevEnemies[i] = enemies3[i]->position;
     }
 
-    updateTimer();
-    old_minutes = prev_minutes;
-    old_seconds = prev_seconds;
-    prev_minutes = minutes;
-    prev_seconds = seconds;
-    display_HEX(byte1, byte2, byte3);
-    update_LED();
+    CHEESE_COUNT = 0;
+    point* ep1 = pointStruct(100, 54);
+    point* ep2 = pointStruct(220, 54);
 
-    // Update death counter if necessary
-    updateDeathCounter();
+    Cheese* e11 = cheeseStruct(ep1);
+    Cheese* e12 = cheeseStruct(ep2);
 
+    Cheese* cheeses3[] = {e11, e12};
+    for (int i = 0; i < 2; i++) {
+      draw_cheese(cheeses3[i]);
+    }
     wait_for_vsync();
     pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+    for (int i = 0; i < 2; i++) {
+      draw_cheese(cheeses3[i]);
+    }
+    playAudio(NEXTLEVEL, NEXTLEVEL_SOUND);
+
+    // Level 3 main loop
+    while (ON_LEVEL3) {
+      // Calculate position
+      moveSquareNoAcc(newSquare3);
+      // Calculate position of each enemy
+      moveCircles3(enemies3, 14);
+      // Check for any collisions
+      checkForCollisions(newSquare3, enemies3, 14);
+      // Check if we collected THE CHEESE!
+      checkForCheese(newSquare3, cheeses3, 2);
+      // Check if won
+      checkWin(newSquare3, 3, cheeses3, 2);
+      // Erase player square if necessary
+      erase_player_square(oldSquare, newSquare3, 3);
+      // Erase old circle positions, draw new ones
+      drawCircles(enemies3, oldEnemies, 14, 3);
+      // Draw player's current position
+      draw_player_square(newSquare3);
+
+      // Update oldSquare position
+      oldSquare = prevSquare;
+      prevSquare = newSquare3->position;
+
+      if (dead2) {
+        dead2 = false;
+        updateCheeseCounter();
+        for (int i = 0; i < 2; i++) {
+          draw_cheese(cheeses3[i]);
+        }
+      }
+
+      if (dead) {
+        newSquare3->position = newSquare3->respawn;
+        playAudio(DEATH, DEATH_SOUND);
+        dead = false;
+        dead2 = true;
+        CHEESE_COUNT = 0;
+        updateCheeseCounter();
+        for (int i = 0; i < 2; i++) {
+          cheeses3[i]->collected = false;
+          cheeses3[i]->erasedTwice = false;
+          draw_cheese(cheeses3[i]);
+        }
+      }
+
+      // Update circle positions
+      for (int i = 0; i < 14; i++) {
+        oldEnemies[i] = prevEnemies[i];
+        prevEnemies[i] = enemies3[i]->position;
+      }
+
+      updateTimer();
+      old_minutes = prev_minutes;
+      old_seconds = prev_seconds;
+      prev_minutes = minutes;
+      prev_seconds = seconds;
+      display_HEX(byte1, byte2, byte3);
+      update_LED();
+
+      // Update death counter if necessary
+      updateDeathCounter();
+
+      wait_for_vsync();
+      pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+    }
+    level3 = false;
+    END_SCREEN = true;
+    playAudio(NEXTLEVEL, NEXTLEVEL_SOUND);
+    configEndScreen();
+
+    while (END_SCREEN) {
+      updateTitleScreen();
+    }
+    ON_LEVEL1 = true;
+    ON_LEVEL2 = true;
+    ON_LEVEL3 = true;
+
+    DEATH_COUNT = 0;
+    OLD_COUNT1 = -1;
+    OLD_COUNT2 = -1;
+    minutes = 0;
+    seconds = 0;
+    centiseconds = 0;
+
+    *(timer_ptr + 1) = 0x8;  // STOP = 1, START = 0, CONT = 0, ITO = 0
+    configTimer();
+    *(timer_ptr + 1) = 0x7;  // STOP = 1, START = 0, CONT = 0, ITO = 0
   }
 }
 
@@ -491,9 +585,7 @@ void updateDeathCounter() {
     }
     OLD_COUNT1 = DEATH_COUNT;
     return;
-  }
-
-  if (OLD_COUNT2 != DEATH_COUNT) {
+  } else if (OLD_COUNT2 != DEATH_COUNT) {
     for (int x = 0; x < 24; x++) {
       for (int y = 0; y < 20; y++) {
         // Fill it with whatever the background colour was
@@ -660,6 +752,18 @@ void configLevel3() {
   drawLevelCount(3);
 }
 
+void configEndScreen() {
+  volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
+
+  // Draw background & level on back buffer
+  drawFinal();
+  wait_for_vsync();                            // Send to front
+  pixel_buffer_start = *(pixel_ctrl_ptr + 1);  // Get new back buffer pointer
+
+  // Draw background on back buffer again to "reset" both frames
+  drawFinal();
+}
+
 void checkWin(Square* newSquare, int level, Cheese* cheeses[], int size) {
   for (int i = 0; i < size; i++) {
     if (cheeses[i]->erasedTwice == false) return;
@@ -680,7 +784,7 @@ void checkWin(Square* newSquare, int level, Cheese* cheeses[], int size) {
       ON_LEVEL2 = false;
     }
   } else {
-    if (newSquare->position->y + half_side_length >= 160) {
+    if (newSquare->position->y + half_side_length >= 190) {
       ON_LEVEL3 = false;
     }
   }
