@@ -343,7 +343,7 @@ void checkForCollisions(Square* square, Circle* circle[], int size) {
     if (collided(square, circle[i])) {
       square->position = square->respawn;
       DEATH_COUNT++;
-      // playAudio(DEATH, DEATH_SOUND);
+      playAudio(DEATH, DEATH_SOUND);
     }
   }
 }

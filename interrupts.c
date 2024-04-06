@@ -185,11 +185,11 @@ void playAudio(int samples[], int whichSound) {
   if (whichSound == TEST_SOUND) {
     size = 8932;  // wilhelm sound
   }else if(whichSound == CHEESE_SOUND){
-    size = 1536;
+    size = 5067;
   }else if(whichSound == NEXTLEVEL_SOUND){
-    size = 18624;
+    size = 18309;
   }else if(whichSound == DEATH_SOUND){
-    size = 5568;
+    size = 5232;
   } else {
     return;
   }

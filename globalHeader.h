@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <pthread.h>
 
 #define BOARD "DE1-SoC"
 
