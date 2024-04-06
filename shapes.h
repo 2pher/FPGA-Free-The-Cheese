@@ -69,9 +69,9 @@ Cheese* cheeseStruct(point* position);
 // destructor
 void freeCheese(Cheese* cheese);
 
+// Check for collisions
 void checkForCollisions(Square* square, Circle* circle[], int size);
 bool collided(Square* square, Circle* circle);
-
 bool checkBoundaryDiagonal(Square* square, int dx, int dy);
 
 #endif

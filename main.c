@@ -10,22 +10,21 @@
 extern volatile int pixel_buffer_start;
 extern volatile char byte1, byte2, byte3;
 extern bool KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT;
-extern bool ON_TITLE_SCREEN, ON_LEVEL1, ON_LEVEL2, ON_LEVEL3;
+extern bool ON_TITLE_SCREEN, ON_LEVEL1, ON_LEVEL2, ON_LEVEL3, END_SCREEN;
 extern short int buffer1[240][512];  // Store into front buffer
 extern short int buffer2[240][512];  // Store into back buffer
 extern int DEATH_COUNT, CHEESE_COUNT;
-extern bool level1, level2, level3, dead, END_SCREEN;
-int OLD_COUNT1, OLD_COUNT2;
+extern bool level1, level2, level3, dead;
 extern int centiseconds, seconds, minutes;
 extern int old_seconds, old_minutes;
 extern audioDevice* audioBuffer;
+int OLD_COUNT1, OLD_COUNT2;
 int prev_seconds, prev_minutes;
 bool dead2;
 
 /* Function prototypes */
 void configVGA(void);
 void updateTitleScreen(void);
-// void resetBackground(void);
 void drawDeathCounter(void);
 void updateDeathCounter(void);
 void updateCount(int, int);
@@ -60,22 +59,22 @@ int main(void) {
   ON_TITLE_SCREEN = true;  // Global variable that stays true until <SPACE>
   DEATH_COUNT = 0;         // Initialize user death count
   OLD_COUNT1 = 0;          // Old death count to compare to current
-  OLD_COUNT2 = 0;
-  ON_LEVEL1 = true;
-  ON_LEVEL2 = true;
-  ON_LEVEL3 = true;
-  END_SCREEN = false;
-  level1 = false;
-  level2 = false;
-  level3 = false;
-  CHEESE_COUNT = 0;
-  centiseconds = 0;
-  seconds = 0;
-  minutes = 0;
-  old_seconds = 0;
-  old_minutes = 0;
-  dead = false;
-  dead2 = false;
+  OLD_COUNT2 = 0;          // Second old death count for double buffering
+  ON_LEVEL1 = true;        // Global to check level 1
+  ON_LEVEL2 = true;        // Global to check level 2
+  ON_LEVEL3 = true;        // Global to check level 3
+  END_SCREEN = false;      // Global to check end screeen
+  level1 = false;          // Global to check level 1
+  level2 = false;          // Global to check level 2
+  level3 = false;          // Global to check level 3
+  CHEESE_COUNT = 0;        // Global variable for cheese count
+  centiseconds = 0;        // Global variable for timer
+  seconds = 0;             // Global variable for timer
+  minutes = 0;             // Global variable for timer
+  old_seconds = 0;         // Old seconds for double buffering
+  old_minutes = 0;         // Old minutes for double buffering
+  dead = false;            // Global to redraw cheeses and sound on death
+  dead2 = false;           // Additional for double buffering
 
   /*******************************************************************************
    *  TITLE SCREEN
@@ -85,6 +84,9 @@ int main(void) {
     updateTitleScreen();
   }
 
+  /*******************************************************************************
+   *  GAME
+   ******************************************************************************/
   while (1) {
     /*******************************************************************************
      *  LEVEL 1
@@ -107,6 +109,8 @@ int main(void) {
     point* p4 = pointStruct(108, 202);
     point* p5 = pointStruct(172, 202);
     point* p6 = pointStruct(236, 202);
+
+    // Directions to assign to bots
     point* down = pointStruct(0, 3);
     point* up = pointStruct(0, -3);
     point* up2 = pointStruct(0, -1);
@@ -120,8 +124,10 @@ int main(void) {
     Circle* e4 = circleStruct(p4, 3, up);
     Circle* e5 = circleStruct(p5, 3, up);
     Circle* e6 = circleStruct(p6, 3, up);
+    // Create array of enemies
     Circle* enemies[] = {e1, e2, e3, e4, e5, e6};
 
+    // Prev and old to store positions of enemies for double buffering
     point* oldEnemies[14];
     point* prevEnemies[14];
     for (int i = 0; i < 6; i++) {
@@ -129,6 +135,7 @@ int main(void) {
       oldEnemies[i] = enemies[i]->position;
     }
 
+    // Create cheeses, make an array
     point* cp1 = pointStruct(59, 39);
     point* cp2 = pointStruct(262, 39);
     point* cp3 = pointStruct(262, 191);
@@ -139,6 +146,7 @@ int main(void) {
     Cheese* c3 = cheeseStruct(cp3);
     Cheese* c4 = cheeseStruct(cp4);
 
+    // Make array and draw on both buffers
     Cheese* cheeses[] = {c1, c2, c3, c4};
     for (int i = 0; i < 4; i++) {
       draw_cheese(cheeses[i]);
@@ -149,6 +157,7 @@ int main(void) {
       draw_cheese(cheeses[i]);
     }
 
+    // Start the timer
     *(timer_ptr + 1) = 0x7;  // STOP = 0, START = 1, CONT = 1, ITO = 1
 
     // Level 1 main loop
@@ -279,7 +288,9 @@ int main(void) {
     for (int i = 0; i < 3; i++) {
       draw_cheese(cheeses2[i]);
     }
+
     playAudio(NEXTLEVEL, NEXTLEVEL_SOUND);
+
     while (ON_LEVEL2) {
       // Calculate position
       moveSquareNoAcc(newSquare2);
@@ -396,6 +407,7 @@ int main(void) {
       prevEnemies[i] = enemies3[i]->position;
     }
 
+    // Create array of cheeses for user to grab
     CHEESE_COUNT = 0;
     point* ep1 = pointStruct(100, 54);
     point* ep2 = pointStruct(220, 54);
@@ -480,17 +492,25 @@ int main(void) {
       pixel_buffer_start = *(pixel_ctrl_ptr + 1);
     }
     level3 = false;
+
+    /*******************************************************************************
+     *  END SCREEN
+     ******************************************************************************/
+    configEndScreen();
     END_SCREEN = true;
     playAudio(NEXTLEVEL, NEXTLEVEL_SOUND);
-    configEndScreen();
 
     while (END_SCREEN) {
       updateTitleScreen();
     }
+
+    // Get ready to restart game
+    // Set all levels to true
     ON_LEVEL1 = true;
     ON_LEVEL2 = true;
     ON_LEVEL3 = true;
 
+    // Reinitialize all death counts, set timer to 0
     DEATH_COUNT = 0;
     OLD_COUNT1 = -1;
     OLD_COUNT2 = -1;
@@ -498,12 +518,16 @@ int main(void) {
     seconds = 0;
     centiseconds = 0;
 
+    // Restart the timer
     *(timer_ptr + 1) = 0x8;  // STOP = 1, START = 0, CONT = 0, ITO = 0
     configTimer();
     *(timer_ptr + 1) = 0x7;  // STOP = 1, START = 0, CONT = 0, ITO = 0
   }
 }
 
+/*******************************************************************************
+ * Initializer for VGA - runs on startup (prints title screen)
+ ******************************************************************************/
 void configVGA() {
   volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
 
@@ -521,6 +545,9 @@ void configVGA() {
   wait_for_vsync();
 }
 
+/*******************************************************************************
+ * Animation for mouse
+ ******************************************************************************/
 void updateTitleScreen() {
   volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
 
@@ -559,12 +586,18 @@ void updateTitleScreen() {
   while (counter != 5000000) counter++;
 }
 
+/*******************************************************************************
+ * Draw text for 'DEATH COUNTER' on top left
+ ******************************************************************************/
 void drawDeathCounter() {
   for (int i = 0; i < (sizeof(DEATH_COUNTER) / sizeof(DEATH_COUNTER[0])); i++) {
     xy_plot_pixel(DEATH_COUNTER[i].x, DEATH_COUNTER[i].y, 0xFFFF);
   }
 }
 
+/*******************************************************************************
+ * Update death counter depending on DEATH_COUNT
+ ******************************************************************************/
 void updateDeathCounter() {
   // Check if the counter needs to be redrawn
   if (OLD_COUNT1 != DEATH_COUNT) {
@@ -606,6 +639,9 @@ void updateDeathCounter() {
   }
 }
 
+/*******************************************************************************
+ * Updates count depending on what place the digit is
+ ******************************************************************************/
 void updateCount(int num, int digit) {
   // 146, 158, 7
   if (num == 0) {
@@ -681,6 +717,9 @@ void updateCount(int num, int digit) {
   }
 }
 
+/*******************************************************************************
+ * Draw level 1 and UI on both buffers
+ ******************************************************************************/
 void configLevel1() {
   volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
 
@@ -704,6 +743,9 @@ void configLevel1() {
   drawTimer();
 }
 
+/*******************************************************************************
+ * Draw level 2 and UI on both buffers
+ ******************************************************************************/
 void configLevel2() {
   volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
 
@@ -728,6 +770,9 @@ void configLevel2() {
   drawLevelCount(2);
 }
 
+/*******************************************************************************
+ * Draw level 3 and UI on both buffers
+ ******************************************************************************/
 void configLevel3() {
   volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
 
@@ -752,6 +797,9 @@ void configLevel3() {
   drawLevelCount(3);
 }
 
+/*******************************************************************************
+ * Draw end screen on both buffers
+ ******************************************************************************/
 void configEndScreen() {
   volatile int* pixel_ctrl_ptr = (int*)PIXEL_BUF_CTRL_BASE;
 

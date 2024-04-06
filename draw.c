@@ -3,6 +3,9 @@
 #include "audio_samples.h"
 #include "interrupts.h"
 
+/*******************************************************************************
+ * Define external variables used / modifying
+ ******************************************************************************/
 extern volatile int pixel_buffer_start;
 extern bool level1, level2, level3;
 extern int CHEESE_COUNT;
@@ -10,13 +13,18 @@ extern audioDevice *audioBuffer;
 extern int centiseconds, seconds, minutes;
 extern int old_seconds, old_minutes;
 
-// plot 1 pixel given xy and colour
+/*******************************************************************************
+ * Plot pixel, given x, y and line color
+ ******************************************************************************/
 void xy_plot_pixel(int x, int y, short int line_color) {
   volatile short int *one_pixel_address;
   one_pixel_address = (pixel_buffer_start + (y << 10) + (x << 1));
   *one_pixel_address = line_color;
 }
 
+/*******************************************************************************
+ * Draw title screen
+ ******************************************************************************/
 void drawTitleScreen(void) {
   for (int x = 0; x < 320; x++) {
     for (int y = 0; y < 240; y++) {
@@ -25,6 +33,9 @@ void drawTitleScreen(void) {
   }
 }
 
+/*******************************************************************************
+ * Draw animating mouse depending on frame (draw)
+ ******************************************************************************/
 void drawMouse(int mouse, bool draw) {
   if (mouse == 1) {
     for (int i = 0; i < (sizeof(MOUSE1) / sizeof(MOUSE1[0])); i++) {
@@ -53,6 +64,9 @@ void drawMouse(int mouse, bool draw) {
   }
 }
 
+/*******************************************************************************
+ * Print level 1 onto back buffer
+ ******************************************************************************/
 void drawLevel1() {
   for (int x = 0; x < 320; x++) {
     for (int y = 0; y < 240; y++) {
@@ -61,6 +75,9 @@ void drawLevel1() {
   }
 }
 
+/*******************************************************************************
+ * Print level 2 onto back buffer
+ ******************************************************************************/
 void drawLevel2() {
   for (int x = 0; x < 320; x++) {
     for (int y = 0; y < 240; y++) {
@@ -69,6 +86,9 @@ void drawLevel2() {
   }
 }
 
+/*******************************************************************************
+ * Print level 3 onto back buffer
+ ******************************************************************************/
 void drawLevel3() {
   for (int x = 0; x < 320; x++) {
     for (int y = 0; y < 240; y++) {
@@ -77,6 +97,9 @@ void drawLevel3() {
   }
 }
 
+/*******************************************************************************
+ * Print end screen onto back buffer
+ ******************************************************************************/
 void drawFinal() {
   for (int x = 0; x < 320; x++) {
     for (int y = 0; y < 240; y++) {
@@ -89,7 +112,9 @@ void drawFinal() {
   }
 }
 
-// clear screen
+/*******************************************************************************
+ * Clear screen
+ ******************************************************************************/
 void clear_screen() {
   for (int x = 0; x < 320; x++) {
     for (int y = 0; y < 240; y++) {
@@ -98,14 +123,18 @@ void clear_screen() {
   }
 }
 
-// helper for draw line
+/*******************************************************************************
+ * Swap two values
+ ******************************************************************************/
 void swap(int *a, int *b) {
   int temp = *a;
   *a = *b;
   *b = temp;
 }
 
-// draws a line using Bresenham's algorithm
+/*******************************************************************************
+ * Draw line
+ ******************************************************************************/
 void draw_line(int x0, int y0, int x1, int y1, short int colour) {
   bool is_steep = abs(y1 - y0) > abs(x1 - x0);
 
@@ -143,7 +172,9 @@ void draw_line(int x0, int y0, int x1, int y1, short int colour) {
   }
 }
 
-// draw player square, ONLY ODD VALUED SQUARESIZE
+/*******************************************************************************
+ * Draw player square based on its position and side length
+ ******************************************************************************/
 void draw_player_square(Square *square) {
   int half_side_length = (square->sideLength - 1) / 2;
   for (int x = square->position->x - half_side_length;
@@ -155,7 +186,9 @@ void draw_player_square(Square *square) {
   }
 }
 
-// erase player square
+/*******************************************************************************
+ * Erase player square by drawing background over previous position
+ ******************************************************************************/
 void erase_player_square(point *oldSquare, Square *newSquare, int level) {
   if (oldSquare->x != newSquare->position->x ||
       oldSquare->y != newSquare->position->y) {
@@ -173,7 +206,9 @@ void erase_player_square(point *oldSquare, Square *newSquare, int level) {
   }
 }
 
-// Draw all circles
+/*******************************************************************************
+ * Loop to erase and draw all circles
+ ******************************************************************************/
 void drawCircles(Circle *circle[], point *oldCircle[], int size, int level) {
   for (int i = 0; i < size; i++) {
     erase_circle(oldCircle[i], level);
@@ -183,7 +218,9 @@ void drawCircles(Circle *circle[], point *oldCircle[], int size, int level) {
   }
 }
 
-// draw circle obstacle
+/*******************************************************************************
+ * Draws circle based on position and radius
+ ******************************************************************************/
 void draw_circle(Circle *circle) {
   int half_side_length = 2;
   if (level2) half_side_length = 10;
@@ -196,6 +233,9 @@ void draw_circle(Circle *circle) {
   }
 }
 
+/*******************************************************************************
+ * Erases circle by printing level background on previous position
+ ******************************************************************************/
 void erase_circle(point *circle, int level) {
   int half_side_length = 2;
   if (level2) half_side_length = 10;
@@ -214,7 +254,9 @@ void erase_circle(point *circle, int level) {
   }
 }
 
-// draw cheese
+/*******************************************************************************
+ * Draw image of cheese at desired position
+ ******************************************************************************/
 void draw_cheese(Cheese *cheese) {
   int halfSideLength = cheese->halfSideLength;
   for (int i = 0; i < sizeof(CHEESE) / sizeof(CHEESE[0]); i++) {
@@ -224,6 +266,13 @@ void draw_cheese(Cheese *cheese) {
   }
 }
 
+/*******************************************************************************
+ * Helper function to check if player collided with cheese:
+ * - Update cheese count
+ * - Play sound
+ * - Update spawn point
+ * - Update 'Cheese' struct to check if level is completed
+ ******************************************************************************/
 void checkForCheese(Square *square, Cheese *cheese[], int size) {
   for (int i = 0; i < size; i++) {
     if (!cheese[i]->collected) {
@@ -250,7 +299,6 @@ void checkForCheese(Square *square, Cheese *cheese[], int size) {
         erase_cheese(cheese[i]);
         CHEESE_COUNT++;
         updateCheeseCounter();
-        
       }
     } else if (cheese[i]->collected && !cheese[i]->erasedTwice) {
       erase_cheese(cheese[i]);
@@ -260,7 +308,9 @@ void checkForCheese(Square *square, Cheese *cheese[], int size) {
   }
 }
 
-// erase cheese
+/*******************************************************************************
+ * Erase a cheese if collided by printing level background over its position
+ ******************************************************************************/
 void erase_cheese(Cheese *cheese) {
   int halfSideLength = cheese->halfSideLength;
   for (int x = cheese->position->x - halfSideLength;
@@ -274,7 +324,9 @@ void erase_cheese(Cheese *cheese) {
   }
 }
 
-// Wait for screen to finish drawing
+/*******************************************************************************
+ * V-sync helper function
+ ******************************************************************************/
 void wait_for_vsync() {
   volatile int *pixel_ctrl_ptr = (int *)PIXEL_BUF_CTRL_BASE;
   int bufferStatusBit;
@@ -287,6 +339,9 @@ void wait_for_vsync() {
   }
 }
 
+/*******************************************************************************
+ * Draws level count - UI Element
+ ******************************************************************************/
 void drawLevelCount(int count) {
   for (int i = 0; i < sizeof(NUM_3) / sizeof(NUM_3[0]); i++) {
     xy_plot_pixel(NUM_3[i].x + 300, NUM_3[i].y + 7, 0xFFFF);
@@ -311,6 +366,11 @@ void drawLevelCount(int count) {
   }
 }
 
+/*******************************************************************************
+ * Draw cheese counter
+ * - Print image of cheese
+ * - 0 / (max_count)
+ ******************************************************************************/
 void drawCheeseCounter(int max_count) {
   // First, draw the icon
   for (int i = 0; i < sizeof(CHEESE_ICON) / sizeof(CHEESE_ICON[0]); i++) {
@@ -342,6 +402,9 @@ void drawCheeseCounter(int max_count) {
   }
 }
 
+/*******************************************************************************
+ * Called when CHEESE_COUNT is updated. Erase previous number and draw new
+ ******************************************************************************/
 void updateCheeseCounter() {
   for (int x = 0; x < 10; x++) {
     for (int y = 0; y < 12; y++) {
@@ -372,6 +435,9 @@ void updateCheeseCounter() {
   }
 }
 
+/*******************************************************************************
+ * Draw initial timer 00:00:00
+ ******************************************************************************/
 void drawTimer() {
   for (int i = 0; i < sizeof(NUM_0) / sizeof(NUM_0[0]); i++) {
     xy_plot_pixel(302 + NUM_0[i].x, 220 + NUM_0[i].y, 0xFFFF);
@@ -388,14 +454,18 @@ void drawTimer() {
   }
 }
 
+/*******************************************************************************
+ * Updates and draws new timer based on DE1-SoC timer
+ ******************************************************************************/
 void updateTimer() {
-  int d1 = 0;
+  int d1 = 0;  // Most significant minute
   int d2 = 0;
   int d3 = 0;
   int d4 = 0;
   int d5 = 0;
-  int d6 = 0;
+  int d6 = 0;  // Least significant hundreth of a second
 
+  // Isolate each of its values to be printed
   if (centiseconds != 0) {
     d6 = centiseconds % 10;
     d5 = centiseconds / 10;

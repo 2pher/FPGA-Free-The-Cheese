@@ -1,6 +1,8 @@
 #include "utilities.h"
 
-// 'Constructor' for images
+/*******************************************************************************
+ * Image constructor
+ ******************************************************************************/
 image* imageStruct(int x1, int y1, short int color1) {
   image* newImage = malloc(sizeof(image));
   if (newImage != NULL) {
@@ -13,7 +15,9 @@ image* imageStruct(int x1, int y1, short int color1) {
 
 void freeImage(image* i) { free(i); }
 
-//'constructor' function for point structs
+/*******************************************************************************
+ * Point constructor
+ ******************************************************************************/
 point* pointStruct(int x1, int y1) {
   point* newPoint = malloc(sizeof(point));  // Allocate memory
   if (newPoint != NULL) {  // Check if memory allocation was successful
@@ -25,14 +29,17 @@ point* pointStruct(int x1, int y1) {
 
 void freePoint(point* p) { free(p); }
 
-// add 2 points together
+/*******************************************************************************
+ * Helper function to add 2 points
+ ******************************************************************************/
 point* addPoints(point* point1, point* point2) {
   point* newPoint = pointStruct(point1->x + point2->x, point1->y + point2->y);
   return newPoint;
 }
 
-//'constructor' function for square hitbox structs
-// only for odd valued sideLength
+/*******************************************************************************
+ * Hitbox constructor
+ ******************************************************************************/
 squareHitbox* centreSquareHitboxStruct(point* centre, int sideLength) {
   squareHitbox* hitbox = malloc(sizeof(squareHitbox));  // Allocate memory
   if (hitbox != NULL) {  // Check if memory allocation was successful
@@ -57,13 +64,16 @@ squareHitbox* cornerPointsSquareHitboxStruct(point* topLeft,
   return hitbox;
 }
 
-// circleHitbox 'constructor'
+/*******************************************************************************
+ * Circle hitbox constructor
+ ******************************************************************************/
 circleHitbox* circleHitboxStruct(point* centre, int radius) {
   // to be completed
 }
 
-// 3 versions of distance formula, implemented via normal distance formula eqn.
-// It's in double but could be rounded to int later if neccessary
+/*******************************************************************************
+ * Distance formulas
+ ******************************************************************************/
 double xyxyDistanceFormula(int x1, int y1, int x2, int y2) {
   // return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
   return 0;

@@ -3,11 +3,16 @@
 #include "audio_samples.h"
 #include "interrupts.h"
 
+/*******************************************************************************
+ * Define external variables used / modifying
+ ******************************************************************************/
 extern bool KEY_UP, KEY_DOWN, KEY_RIGHT, KEY_LEFT;
 extern int DEATH_COUNT;
 extern bool level1, level2, level3, dead;
 
-// square 'constructor'
+/*******************************************************************************
+ * Square Constructor
+ ******************************************************************************/
 Square* squareStruct(point* pos, int sideLength) {
   Square* newSquare = malloc(sizeof(Square));  // Allocate memory
   if (newSquare != NULL) {  // Check if memory allocation was successful
@@ -39,7 +44,9 @@ void freeSquare(Square* s) {
   free(s);
 }
 
-// update acceleration based on key press
+/*******************************************************************************
+ * Update square position
+ ******************************************************************************/
 void moveSquare(Square* square) {
   int maxVelocity = 10;  // to be changed in testing
   int acceleration = 1;  // to be changed in testing
@@ -90,7 +97,9 @@ void moveSquare(Square* square) {
   square->velocity = addPoints(square->velocity, square->acceleration);
 }
 
-// update velocity with keypress
+/*******************************************************************************
+ * Updates square position based on user input, checking for boundaries
+ ******************************************************************************/
 void moveSquareNoAcc(Square* square) {
   int unit_velocity = 1;
   // if pushing up and down, and either left or right
@@ -202,7 +211,9 @@ void updateSquare(Square* square) {
   moveSquareNoAcc(square);
 }
 
-// circle 'constructor'
+/*******************************************************************************
+ * Circle Constructor
+ ******************************************************************************/
 Circle* circleStruct(point* position, int radius, point* velocity) {
   // create points
   Circle* newCircle = malloc(sizeof(Circle));  // Allocate memory
@@ -239,6 +250,9 @@ void freeCircle(Circle* circle) {
   free(circle);
 }
 
+/*******************************************************************************
+ * Update positions for circle enemies in level 1
+ ******************************************************************************/
 void moveCircles(Circle* circle[], int size) {
   int unit_velocity = 3;
   int half_side_length = 3;
@@ -256,6 +270,9 @@ void moveCircles(Circle* circle[], int size) {
   }
 }
 
+/*******************************************************************************
+ * Update positions for circle enemies in level 2
+ ******************************************************************************/
 void moveCircles2(Circle* circle[], int size) {
   int unit_velocity = 3;
 
@@ -286,6 +303,9 @@ void moveCircles2(Circle* circle[], int size) {
   }
 }
 
+/*******************************************************************************
+ * Update positions for circle enemies in level 3
+ ******************************************************************************/
 void moveCircles3(Circle* circle[], int size) {
   int unit_velocity = 3;
   int velocity_y = 1;
@@ -321,7 +341,9 @@ void moveCircles3(Circle* circle[], int size) {
   }
 }
 
-// coin constructor
+/*******************************************************************************
+ * Cheese constructor
+ ******************************************************************************/
 Cheese* cheeseStruct(point* position) {
   Cheese* newCheese = malloc(sizeof(Cheese));
   if (newCheese != NULL) {
@@ -333,12 +355,15 @@ Cheese* cheeseStruct(point* position) {
   return newCheese;
 }
 
-// where it all started...
+// Where it all started...
 void freeCheese(Cheese* cheese) {
   free(cheese->position);
   free(cheese);
 }
 
+/*******************************************************************************
+ * Loop to call collision checker between player and all enemy circles
+ ******************************************************************************/
 void checkForCollisions(Square* square, Circle* circle[], int size) {
   for (int i = 0; i < size; i++) {
     if (collided(square, circle[i])) {
@@ -349,27 +374,32 @@ void checkForCollisions(Square* square, Circle* circle[], int size) {
   }
 }
 
+/*******************************************************************************
+ * Helper function to check for collisions
+ ******************************************************************************/
 bool collided(Square* square, Circle* circle) {
-  // Calculate the coordinates of opposite corners of each square
   int square_x1 = square->position->x - ((square->sideLength - 1) / 2);
   int square_x2 = square->position->x + ((square->sideLength - 1) / 2);
   int square_y1 = square->position->y - ((square->sideLength - 1) / 2);
   int square_y2 = square->position->y + ((square->sideLength - 1) / 2);
 
-  int circle_x1 = circle->position->x - circle->radius - 1;  // Left
-  int circle_x2 = circle->position->x + circle->radius - 1;  // Right
-  int circle_y1 = circle->position->y - circle->radius - 1;  // Top
-  int circle_y2 = circle->position->y + circle->radius - 1;  // Bottom
+  int circle_x1 = circle->position->x - circle->radius - 1;
+  int circle_x2 = circle->position->x + circle->radius - 1;
+  int circle_y1 = circle->position->y - circle->radius - 1;
+  int circle_y2 = circle->position->y + circle->radius - 1;
 
-  // Check if squares have collided from any direction
+  // Check for collision
   if (square_x1 <= circle_x2 && square_x2 >= circle_x1 &&
       square_y1 <= circle_y2 && square_y2 >= circle_y1) {
-    return true;  // Collision detected
+    return true;
   }
 
-  return false;  // No collision
+  return false;
 }
 
+/*******************************************************************************
+ * Check if square is hitting left boundary
+ ******************************************************************************/
 bool checkBoundaryLeft(Square* square) {
   int half_side_length = (square->sideLength - 1) / 2;
   for (int y = square->position->y - half_side_length;
@@ -387,6 +417,9 @@ bool checkBoundaryLeft(Square* square) {
   return true;
 }
 
+/*******************************************************************************
+ * Check if square is hitting right boundary
+ ******************************************************************************/
 bool checkBoundaryRight(Square* square) {
   int half_side_length = (square->sideLength - 1) / 2;
   for (int y = square->position->y - half_side_length;
@@ -404,6 +437,9 @@ bool checkBoundaryRight(Square* square) {
   return true;
 }
 
+/*******************************************************************************
+ * Check if square is hitting top boundary
+ ******************************************************************************/
 bool checkBoundaryUp(Square* square) {
   int half_side_length = (square->sideLength - 1) / 2;
   for (int x = square->position->x - half_side_length;
@@ -421,6 +457,9 @@ bool checkBoundaryUp(Square* square) {
   return true;
 }
 
+/*******************************************************************************
+ * Check if square is hitting bottom boundary
+ ******************************************************************************/
 bool checkBoundaryDown(Square* square) {
   int half_side_length = (square->sideLength - 1) / 2;
   for (int x = square->position->x - half_side_length;
@@ -438,6 +477,10 @@ bool checkBoundaryDown(Square* square) {
   return true;
 }
 
+/*******************************************************************************
+ * Check if square is hitting corner boundary based on input
+ * - dx, dy controls top_r, bot_r, bot_l, top_l
+ ******************************************************************************/
 bool checkBoundaryDiagonal(Square* square, int dx, int dy) {
   int half_side_length = ((square->sideLength - 1) / 2) + 1;
   if (level1) {
