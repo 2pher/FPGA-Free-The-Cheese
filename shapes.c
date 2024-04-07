@@ -45,59 +45,6 @@ void freeSquare(Square* s) {
 }
 
 /*******************************************************************************
- * Update square position
- ******************************************************************************/
-void moveSquare(Square* square) {
-  int maxVelocity = 10;  // to be changed in testing
-  int acceleration = 1;  // to be changed in testing
-
-  // if pushing up and down, and either left or right
-  if ((KEY_UP && KEY_DOWN) && !(KEY_LEFT && KEY_RIGHT)) {
-    if (KEY_RIGHT && !KEY_LEFT) {
-      square->acceleration = pointStruct(acceleration, 0);
-    } else if (KEY_LEFT && !KEY_RIGHT) {
-      square->acceleration = pointStruct(-acceleration, 0);
-    } else {
-      square->acceleration = pointStruct(0, 0);
-    }
-    // if pushing left and right, and either up or down
-  } else if ((KEY_LEFT && KEY_RIGHT) && !(KEY_UP && KEY_DOWN)) {
-    if (KEY_UP && !KEY_DOWN) {
-      square->acceleration = pointStruct(0, -acceleration);
-    } else if (KEY_DOWN && !KEY_UP) {
-      square->acceleration = pointStruct(0, acceleration);
-    } else {
-      square->acceleration = pointStruct(0, 0);
-    }
-    // if pushing all
-  } else if (KEY_UP && KEY_DOWN && KEY_RIGHT && KEY_LEFT) {
-    square->acceleration = pointStruct(0, 0);
-  } else {
-    // if pushing any 2 non-opposite directions
-    if (KEY_UP && KEY_RIGHT) {
-      square->acceleration = pointStruct(acceleration, -acceleration);
-    } else if (KEY_RIGHT && KEY_DOWN) {
-      square->acceleration = pointStruct(acceleration, acceleration);
-    } else if (KEY_DOWN && KEY_LEFT) {
-      square->acceleration = pointStruct(-acceleration, acceleration);
-    } else if (KEY_LEFT && KEY_UP) {
-      square->acceleration = pointStruct(-acceleration, -acceleration);
-      // if pushing any 1 direction
-    } else if (KEY_UP) {
-      square->acceleration = pointStruct(0, -acceleration);
-    } else if (KEY_RIGHT) {
-      square->acceleration = pointStruct(acceleration, 0);
-    } else if (KEY_DOWN) {
-      square->acceleration = pointStruct(0, acceleration);
-    } else if (KEY_LEFT) {
-      square->acceleration = pointStruct(-acceleration, 0);
-    }
-  }
-  square->position = addPoints(square->position, square->velocity);
-  square->velocity = addPoints(square->velocity, square->acceleration);
-}
-
-/*******************************************************************************
  * Updates square position based on user input, checking for boundaries
  ******************************************************************************/
 void moveSquareNoAcc(Square* square) {

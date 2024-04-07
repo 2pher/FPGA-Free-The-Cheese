@@ -24,12 +24,6 @@ void drawFinal();
 // Clear screen
 void clear_screen();
 
-// Helper for draw line
-void swap(int* a, int* b);
-
-// Draws a line using Bresenham's algorithm
-void draw_line(int x0, int y0, int x1, int y1, short int colour);
-
 // Draw player square
 void draw_player_square(Square* square);
 void erase_player_square(point* oldSquare, Square* square, int level);

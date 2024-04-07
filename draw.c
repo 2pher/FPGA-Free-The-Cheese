@@ -124,55 +124,6 @@ void clear_screen() {
 }
 
 /*******************************************************************************
- * Swap two values
- ******************************************************************************/
-void swap(int *a, int *b) {
-  int temp = *a;
-  *a = *b;
-  *b = temp;
-}
-
-/*******************************************************************************
- * Draw line
- ******************************************************************************/
-void draw_line(int x0, int y0, int x1, int y1, short int colour) {
-  bool is_steep = abs(y1 - y0) > abs(x1 - x0);
-
-  if (is_steep) {
-    swap(&x0, &y0);
-    swap(&x1, &y1);
-  }
-  if (x0 > x1) {
-    swap(&x0, &x1);
-    swap(&y0, &y1);
-  }
-
-  int deltax = x1 - x0;
-  int deltay = abs(y1 - y0);
-  int error = -(deltax / 2);
-  int y_step = 0;
-  int y = y0;
-  if (y0 < y1) {
-    y_step = 1;
-  } else {
-    y_step = -1;
-  }
-
-  for (int x = x0; x <= x1; x++) {
-    if (is_steep) {
-      xy_plot_pixel(y, x, colour);
-    } else {
-      xy_plot_pixel(x, y, colour);
-    }
-    error = error + deltay;
-    if (error > 0) {
-      y = y + y_step;
-      error = error - deltax;
-    }
-  }
-}
-
-/*******************************************************************************
  * Draw player square based on its position and side length
  ******************************************************************************/
 void draw_player_square(Square *square) {

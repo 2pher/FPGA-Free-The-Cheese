@@ -23,7 +23,6 @@ Square* squareStruct(point* position, int sideLength);
 void freeSquare(Square* s);
 
 // move square based on key press
-void moveSquare(Square* square);
 // no acceleration, only linear movement speed
 void moveSquareNoAcc(Square* square);
 
